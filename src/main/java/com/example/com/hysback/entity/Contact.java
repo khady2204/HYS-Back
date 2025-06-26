@@ -7,7 +7,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Contact {
 
     @Id
@@ -15,6 +14,14 @@ public class Contact {
     private Long id;
 
     private String nom;
-    private String telephone;
+
+    private String prenom;
+
+    private String adresse;
+
+    private String sexe;
+
+    private String email;
+
     private boolean favori;
 }

@@ -23,6 +23,12 @@ public class ContactController {
                 .toList();
     }
 
+    // 📋 GET : tous les contacts (favoris + non favoris)
+    @GetMapping("/all")
+    public List<Contact> getAllContacts() {
+        return contactRepository.findAll();
+    }
+
     // ➕ POST : ajouter un contact
     @PostMapping
     public Contact addContact(@RequestBody Contact contact) {
