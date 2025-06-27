@@ -3,10 +3,7 @@ package HelpingYourSelf.com.HelpingYourSelf.DTO;
 import lombok.Data;
 
 @Data
-public class RegisterRequest {
-    private String nom;
-    private String prenom;
-    private String sexe;
+public class LoginRequest {
     private String phone;
     private String email;
     private String password;

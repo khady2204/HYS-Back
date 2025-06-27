@@ -22,19 +22,20 @@ public class JwtTokenProvider {
     private long expirationMs;
 
     public String generateToken(User user) {
-        // On s'assure que chaque rôle est bien préfixé par "ROLE_"
+        // Préfixer les rôles par "ROLE_"
         Set<String> prefixedRoles = user.getRoles().stream()
                 .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
                 .collect(Collectors.toSet());
 
         return Jwts.builder()
-                .setSubject(user.getPhone())
+                .setSubject(user.getPhone()) // le téléphone sert d'identifiant
                 .claim("roles", prefixedRoles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
+
     @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {
         Claims claims = Jwts.parser()
@@ -57,7 +58,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            System.out.println("JWT invalide : " + e.getMessage());
+            System.out.println("❌ JWT invalide : " + e.getMessage());
             return false;
         }
     }
