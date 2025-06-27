@@ -4,6 +4,7 @@ import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
 import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

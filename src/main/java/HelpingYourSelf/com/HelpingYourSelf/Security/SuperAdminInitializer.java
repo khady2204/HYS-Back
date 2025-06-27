@@ -29,7 +29,7 @@ public class SuperAdminInitializer {
             user.setPhone("0000000000");
             user.setRoles(Set.of(Role.ADMIN));
             user.setEnabled(true);
-            userRepository.save(user);
+            userRepository.save(user); 
             System.out.println("✅ SuperAdmin créé par défaut");
         } else {
             System.out.println("ℹ️ SuperAdmin déjà présent");

@@ -2,6 +2,7 @@ package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class AuthService {
         u.setSexe(req.getSexe());
         u.setPassword(encoder.encode(req.getPassword()));
         u.setEnabled(true);
-        u.setRoles(Set.of("USER"));
+        u.setRoles(Set.of(Role.USER));
         userRepo.save(u);
     }
 
@@ -99,5 +100,28 @@ public class AuthService {
     public Optional<User> loginWithPhone(String phone, String password) {
         return userRepo.findByPhone(phone)
                 .filter(u -> encoder.matches(password, u.getPassword()));
+    }
+
+    public String login(LoginRequest req, String ip) {
+        User user;
+
+        if (req.getPhone() != null && !req.getPhone().isEmpty()) {
+            user = userRepo.findByPhone(req.getPhone())
+                    .orElseThrow(() -> new RuntimeException("Numéro introuvable"));
+        } else if (req.getEmail() != null && !req.getEmail().isEmpty()) {
+            user = userRepo.findByEmail(req.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Email introuvable"));
+        } else {
+            throw new RuntimeException("Email ou téléphone requis");
+        }
+
+        if (!encoder.matches(req.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Mot de passe incorrect");
+        }
+
+        user.setLastLoginIp(ip);
+        userRepo.save(user);
+
+        return jwt.generateToken(user);
     }
 }

@@ -22,13 +22,13 @@ public class JwtTokenProvider {
     private long expirationMs;
 
     public String generateToken(User user) {
-        // Préfixer les rôles par "ROLE_"
+        // Ajoute "ROLE_" devant les rôles enum
         Set<String> prefixedRoles = user.getRoles().stream()
-                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                .map(role -> "ROLE_" + role.name())  // Utilise .name() pour obtenir la chaîne enum
                 .collect(Collectors.toSet());
 
         return Jwts.builder()
-                .setSubject(user.getPhone()) // le téléphone sert d'identifiant
+                .setSubject(user.getPhone()) // ou getEmail() selon ton design
                 .claim("roles", prefixedRoles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
@@ -58,7 +58,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            System.out.println("❌ JWT invalide : " + e.getMessage());
+            System.out.println("clJWT invalide : " + e.getMessage());
             return false;
         }
     }
