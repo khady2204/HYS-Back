@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Discussion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .back-button {
+      background-color: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      margin-right: 10px;
+      color: #ff007f;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+    }
+
+    .header img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .chat-box {
+      border: 1px solid #ccc;
+      padding: 15px;
+      height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .input-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-box input {
+      flex: 1;
+      padding: 10px;
+    }
+
+    .input-box button {
+      background-color: #ff007f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <button class="back-button" onclick="window.location.href='liste-discution.html'">←</button>
+    <div class="header">
+      <img id="photo" src="https://via.placeholder.com/50" alt="Photo">
+      <div>
+        <strong id="name">Nom Prénom</strong><br>
+        <small>En ligne</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-box" id="chatBox">
+    <div style="text-align: center;">Aujourd’hui</div>
+    <!-- Messages simulés ou à venir -->
+  </div>
+
+  <div class="input-box">
+    <input type="text" placeholder="Message" id="messageInput" />
+    <button onclick="envoyerMessage()">Envoyer</button>
+  </div>
+
+  <script>
+    // Récupération des infos dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const nom = urlParams.get('nom');
+    const prenom = urlParams.get('prenom');
+    const photo = urlParams.get('photoUrl');
+
+    // Affichage dans la page
+    document.getElementById('name').textContent = `${prenom} ${nom}`;
+    if (photo) {
+      document.getElementById('photo').src = photo;
+    }
+
+    // Simulation d’envoi de message
+    function envoyerMessage() {
+      const input = document.getElementById('messageInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      const chatBox = document.getElementById('chatBox');
+      const div = document.createElement('div');
+      div.textContent = `Moi : ${msg}`;
+      chatBox.appendChild(div);
+      input.value = '';
+    }
+  </script>
+
+</body>
+</html>
