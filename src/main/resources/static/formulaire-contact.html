@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Contacts</title>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h2>Formulaire d'ajout de contact</h2>
+  <form id="contactForm">
+    <label>Nom : <input type="text" name="nom" required></label><br><br>
+    <label>Prénom : <input type="text" name="prenom" required></label><br><br>
+    <label>Adresse : <input type="text" name="adresse"></label><br><br>
+    <label>Sexe : 
+      <select name="sexe">
+        <option value="Homme">Homme</option>
+        <option value="Femme">Femme</option>
+      </select>
+    </label><br><br>
+    <label>Email : <input type="email" name="email" required></label><br><br>
+    <label>
+      Favori :
+      <input type="checkbox" name="favori">
+    </label><br><br>
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <p id="resultat"></p>
+
+  <h2>Liste des contacts enregistrés</h2>
+  <table id="contactsTable">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Adresse</th>
+        <th>Sexe</th>
+        <th>Email</th>
+        <th>Favori</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Les lignes seront ajoutées dynamiquement -->
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('contactForm');
+    const resultat = document.getElementById('resultat');
+    const contactsTableBody = document.querySelector('#contactsTable tbody');
+
+    // ➕ Ajouter un contact
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const contact = {
+        nom: formData.get('nom'),
+        prenom: formData.get('prenom'),
+        adresse: formData.get('adresse'),
+        sexe: formData.get('sexe'),
+        email: formData.get('email'),
+        favori: formData.get('favori') === 'on'
+      };
+
+      try {
+        const response = await fetch('/api/contacts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(contact)
+        });
+
+        if (response.ok) {
+          resultat.textContent = '✅ Contact ajouté avec succès !';
+          form.reset();
+          await chargerContacts(); // Recharge la liste
+        } else {
+          resultat.textContent = '❌ Erreur lors de l’ajout';
+        }
+      } catch (error) {
+        console.error(error);
+        resultat.textContent = '❌ Erreur de connexion au serveur';
+      }
+    });
+
+    // 📋 Charger et afficher les contacts
+    async function chargerContacts() {
+      try {
+        const response = await fetch('/api/contacts/all');
+        const contacts = await response.json();
+
+        // Réinitialiser la table
+        contactsTableBody.innerHTML = '';
+
+        contacts.forEach(contact => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${contact.nom}</td>
+            <td>${contact.prenom}</td>
+            <td>${contact.adresse}</td>
+            <td>${contact.sexe}</td>
+            <td>${contact.email}</td>
+            <td>${contact.favori ? '✅' : ''}</td>
+          `;
+          contactsTableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error("Erreur lors du chargement des contacts :", error);
+      }
+    }
+
+    // Charger les contacts au démarrage
+    chargerContacts();
+  </script>
+</body>
+</html>
