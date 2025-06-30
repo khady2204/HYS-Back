@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,16 +21,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String nom;
     private String prenom;
+    private String adresse;
     private String email;
     private String phone;
-
     private String sexe;
+    private Date datenaissance;
 
     @JsonIgnore
     private String password;
+
+    @Transient
+    @JsonIgnore
+    private String confirmPassword;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -39,7 +44,6 @@ public class User {
     private boolean blocked = false;
 
     private String otp;
-
     private Instant otpExpiration;
 
     private String lastLoginIp;
@@ -58,7 +62,5 @@ public class User {
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();
-
     }
-
 }

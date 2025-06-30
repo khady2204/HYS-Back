@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/superadmin")
 @RequiredArgsConstructor
 public class AdminController {
 
@@ -42,9 +42,10 @@ public class AdminController {
     //  Liste des gestionnaires
     @GetMapping("/managers")
     public ResponseEntity<?> listManagers() {
-        List<User> managers = userRepo.findByRolesContaining("ROLE_ADMIN");
+        List<User> managers = userRepo.findByRolesContaining(Role.GESTIONNAIRE);
         return ResponseEntity.ok(managers);
     }
+
 
     //  Réinitialiser le mot de passe d’un gestionnaire
     @PostMapping("/reset-manager-password/{managerId}")

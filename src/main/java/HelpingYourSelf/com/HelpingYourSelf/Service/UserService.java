@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,14 @@ public class UserService {
     }
 
     public List<User> getUsersByRole(String role) {
-        return userRepository.findByRolesContaining(role);
+        try {
+            Role roleEnum = Role.valueOf(role.toUpperCase());
+            return userRepository.findByRolesContaining(roleEnum);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Rôle invalide : " + role);
+        }
     }
+
 
     public List<User> getUsersCreatedBy(User gestionnaire) {
         return userRepository.findByCreatedBy(gestionnaire);

@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,8 @@ public class UserController {
     //  Liste des utilisateurs (ROLE_ADMIN ou GESTIONNAIRE)
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers() {
-        List<User> users = userRepo.findByRolesContaining("ROLE_USER");
+
+        List<User> users = userRepo.findByRolesContaining(Role.USER);
         return ResponseEntity.ok(users);
     }
 

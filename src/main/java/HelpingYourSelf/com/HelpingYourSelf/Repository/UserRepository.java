@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Repository;
 
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByPhone(String phone);
     boolean existsByEmail(String email);
-    List<User> findByRolesContaining(String role);
+    List<User> findByRolesContaining(Role role);
     List<User> findByCreatedBy(User createdBy);
 
 }

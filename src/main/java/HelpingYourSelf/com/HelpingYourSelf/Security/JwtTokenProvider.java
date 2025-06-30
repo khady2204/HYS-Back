@@ -1,53 +1,62 @@
 package HelpingYourSelf.com.HelpingYourSelf.Security;
 
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import javax.crypto.SecretKey;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
-    private String secret;
+    private String secretKeyString;
 
     @Value("${jwt.expirationMs}")
     private long expirationMs;
 
+    private SecretKey secretKey;
+
+    @PostConstruct
+    public void init() {
+        // Convertir la clé en SecretKey adaptée à HS512
+        this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
+    }
+
     public String generateToken(User user) {
-        // Ajoute "ROLE_" devant les rôles enum
         Set<String> prefixedRoles = user.getRoles().stream()
-                .map(role -> "ROLE_" + role.name())  // Utilise .name() pour obtenir la chaîne enum
+                .map(role -> "ROLE_" + role.name())
                 .collect(Collectors.toSet());
 
         return Jwts.builder()
-                .setSubject(user.getPhone()) // ou getEmail() selon ton design
+                .setSubject(user.getPhone())
                 .claim("roles", prefixedRoles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
     @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secret)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
+
         return claims.get("roles", List.class);
     }
 
     public String getSubjectFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -55,10 +64,13 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            System.out.println("clJWT invalide : " + e.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            System.out.println("JWT invalide : " + e.getMessage());
             return false;
         }
     }
