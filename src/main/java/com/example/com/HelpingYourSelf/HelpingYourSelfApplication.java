@@ -1,4 +1,4 @@
-package HelpingYourSelf.com.HelpingYourSelf;
+package com.example.hysback;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class HelpingYourSelfApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(HelpingYourSelfApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(HelpingYourSelfApplication.class, args);
+    }
 }
