@@ -36,7 +36,7 @@ public class AdminController {
         manager.setEnabled(true);
 
         userRepo.save(manager);
-        return ResponseEntity.ok("Gestionnaire créé avec succès");
+        return ResponseEntity.ok("Gestionnaire créé avec succès ");
     }
 
     //  Liste des gestionnaires
