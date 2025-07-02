@@ -1,4 +1,4 @@
-package com.example.hysback;
+package HelpingYourSelf.com.HelpingYourSelf;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
