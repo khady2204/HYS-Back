@@ -7,4 +7,6 @@ public class ResetConfirmRequest {
     private String phone;
     private String otp;
     private String newPassword;
+    private String confirmPassword;
 }
+

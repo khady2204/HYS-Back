@@ -49,7 +49,12 @@ public class AuthController {
 
     @PostMapping("/reset/confirm")
     public ResponseEntity<?> confirm(@RequestBody ResetConfirmRequest req) {
+        if (!req.getNewPassword().equals(req.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("Les mots de passe ne correspondent pas");
+        }
+
         auth.confirmReset(req);
-        return ResponseEntity.ok("Mot de passe réinitialisé");
+        return ResponseEntity.ok("Mot de passe réinitialisé avec succès");
     }
+
 }

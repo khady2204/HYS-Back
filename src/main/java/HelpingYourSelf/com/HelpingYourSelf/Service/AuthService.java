@@ -150,7 +150,7 @@ public class AuthService {
         }
 
         if (!user.isEnabled()) {
-            throw new RuntimeException("Compte non activé. Veuillez vérifier votre OTP.");
+            throw new RuntimeException("Compte non activé.");
         }
 
         user.setLastLoginIp(ip);
@@ -158,5 +158,6 @@ public class AuthService {
 
         return jwt.generateToken(user);
     }
+
 
 }
