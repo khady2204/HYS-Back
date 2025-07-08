@@ -27,7 +27,6 @@ public class SuperAdminInitializer {
             user.setEmail("superadmin@helpingyourself.com");
             user.setPassword(passwordEncoder.encode("Password123"));
             user.setPhone("0000000000");
-
             user.setRoles(Set.of(Role.valueOf("SUPERADMIN")));
             user.setEnabled(true);
             userRepository.save(user); 

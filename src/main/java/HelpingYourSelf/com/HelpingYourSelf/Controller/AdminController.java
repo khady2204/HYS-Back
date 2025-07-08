@@ -5,8 +5,10 @@ import HelpingYourSelf.com.HelpingYourSelf.DTO.RegisterRequest;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
+import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +23,18 @@ public class AdminController {
     private final UserRepository userRepo;
     private final PasswordEncoder encoder;
 
+    private final AuthService auth;
+
     // Création d’un gestionnaire par le SuperAdmin
     @PostMapping("/create-manager")
     public ResponseEntity<?> createManager(@RequestBody RegisterRequest req) {
-        if (userRepo.existsByEmail(req.getEmail()))
+        if (!req.getPassword().equals(req.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("Les mots de passe ne correspondent pas");
+        }
+
+        if (userRepo.existsByEmail(req.getEmail())) {
             return ResponseEntity.badRequest().body("Email déjà utilisé");
+        }
 
         User manager = new User();
         manager.setEmail(req.getEmail());
@@ -36,8 +45,9 @@ public class AdminController {
         manager.setEnabled(true);
 
         userRepo.save(manager);
-        return ResponseEntity.ok("Gestionnaire créé avec succès ");
+        return ResponseEntity.ok("Gestionnaire créé avec succès");
     }
+
 
     //  Liste des gestionnaires
     @GetMapping("/managers")
@@ -63,4 +73,16 @@ public class AdminController {
 
         return ResponseEntity.ok("Mot de passe du gestionnaire mis à jour avec succès");
     }
+
+    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PostMapping("/superadmin/create")
+    public ResponseEntity<?> createSuperAdmin(@RequestBody RegisterRequest req) {
+        try {
+            auth.createSuperAdmin(req);
+            return ResponseEntity.ok("Nouveau superadmin créé avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

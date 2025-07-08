@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 
+@CrossOrigin(origins = "http://localhost:8100")
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -41,20 +42,41 @@ public class AuthController {
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
-    @PostMapping("/reset")
-    public ResponseEntity<?> reset(@RequestBody ResetRequest req) {
+
+
+
+    // Étape 1 : Demande d’OTP
+    @PostMapping("/reset/request")
+    public ResponseEntity<?> requestResetOtp(@RequestBody ResetRequest req) {
         String otp = auth.sendResetOtp(req);
-        return ResponseEntity.ok("OTP reset (test) : " + otp);
+        return ResponseEntity.ok("OTP envoyé pour réinitialisation");
     }
 
-    @PostMapping("/reset/confirm")
-    public ResponseEntity<?> confirm(@RequestBody ResetConfirmRequest req) {
+    // Étape 2 : Vérification du code OTP
+    @PostMapping("/reset/verify-otp")
+    public ResponseEntity<?> verifyResetOtp(@RequestBody VerifyOtpRequest req) {
+        try {
+            auth.verifyResetOtp(req);
+            return ResponseEntity.ok("OTP vérifié avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Étape 3 : Réinitialisation du mot de passe
+    @PostMapping("/reset/password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetConfirmRequest req) {
         if (!req.getNewPassword().equals(req.getConfirmPassword())) {
             return ResponseEntity.badRequest().body("Les mots de passe ne correspondent pas");
         }
 
-        auth.confirmReset(req);
-        return ResponseEntity.ok("Mot de passe réinitialisé avec succès");
+        try {
+            auth.confirmReset(req);
+            return ResponseEntity.ok("Mot de passe réinitialisé avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
 }

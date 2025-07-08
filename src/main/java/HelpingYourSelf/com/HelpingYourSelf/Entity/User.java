@@ -47,8 +47,14 @@ public class User {
     private boolean enabled = true;
     private boolean blocked = false;
 
+    private int otpAttempts = 0;
+    private Instant otpLockUntil;
+
+
     private String otp;
     private Instant otpExpiration;
+    private Boolean isOtpVerified = false;
+
 
     private String lastLoginIp;
     private String deviceInfo;
