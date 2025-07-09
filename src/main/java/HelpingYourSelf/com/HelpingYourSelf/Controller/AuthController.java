@@ -5,8 +5,12 @@ import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import java.util.Collections;
 
@@ -21,7 +25,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         auth.register(request);
-        return ResponseEntity.ok("Inscription réussie");
+        return ResponseEntity.ok(Map.of("message", "Inscription réussie"));
     }
 
     @PostMapping("/login")
@@ -32,15 +36,33 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody OtpLoginRequest req) {
-        String otp = auth.sendOtp(req);
-        return ResponseEntity.ok("Code OTP (test) : " + otp);
+        try {
+            String otp = auth.sendOtp(req);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "OTP envoyé avec succès.");
+            response.put("otp", otp); // À supprimer en production pour la sécurité
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Échec de l’envoi de l’OTP."));
+        }
     }
 
+
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyOtp(@RequestBody OtpVerifyRequest req, HttpServletRequest http) {
-        String token = auth.verifyOtp(req, http.getRemoteAddr());
-        return ResponseEntity.ok(Collections.singletonMap("token", token));
+    public ResponseEntity<?> verifyOtp(@RequestBody OtpVerifyRequest req, HttpServletRequest request) {
+        try {
+            String token = auth.verifyOtp(req, request.getRemoteAddr());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "OTP vérifié avec succès");
+            response.put("token", token);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Collections.singletonMap("error", "OTP invalide ou expiré."));
+        }
     }
+
 
 
 
@@ -77,6 +99,18 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            System.out.println("Token à invalider : " + token);
+        }
+        return ResponseEntity.ok("Déconnexion réussie.");
+    }
+
 
 
 }
