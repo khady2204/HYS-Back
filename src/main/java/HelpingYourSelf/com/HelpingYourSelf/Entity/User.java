@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -27,6 +25,7 @@ public class User {
     private String email;
     private String phone;
     private String sexe;
+
     private Date datenaissance;
 
     @JsonIgnore
@@ -38,9 +37,13 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
+    @Builder.Default
     private boolean enabled = true;
+
+    @Builder.Default
     private boolean blocked = false;
 
     private String otp;
@@ -63,4 +66,14 @@ public class User {
     public void prePersist() {
         this.createdAt = Instant.now();
     }
+
+    // ✅ Relation ManyToMany avec les centres d'intérêt
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_interet",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "interet_id")
+    )
+    @Builder.Default
+    private List<Interet> interets = new ArrayList<>();
 }

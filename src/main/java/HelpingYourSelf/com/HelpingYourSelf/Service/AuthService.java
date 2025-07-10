@@ -8,6 +8,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -46,21 +47,17 @@ public class AuthService {
         u.setSexe(req.getSexe());
         u.setDatenaissance(req.getDatenaissance());
         u.setPassword(encoder.encode(req.getPassword()));
-        u.setEnabled(false); // Activer uniquement après vérification OTP
+        u.setEnabled(false);
         u.setRoles(Set.of(Role.USER));
 
-        // Générer et enregistrer l’OTP
         String code = String.valueOf(new Random().nextInt(899999) + 100000);
         u.setOtp(code);
         u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
 
         userRepo.save(u);
 
-        // Envoyer l’OTP via console (à remplacer par SMS Twilio en prod)
         System.out.println("[REGISTER] OTP envoyé au numéro " + req.getPhone() + " : " + code);
     }
-
-
 
     public String sendOtp(OtpLoginRequest req) {
         User user = userRepo.findByPhone(req.getPhone())
@@ -92,11 +89,8 @@ public class AuthService {
         user.setEnabled(true);
 
         userRepo.save(user);
-
-
         return jwt.generateToken(user);
     }
-
 
     public String sendResetOtp(ResetRequest req) {
         User user = userRepo.findByPhone(req.getPhone())
@@ -159,4 +153,11 @@ public class AuthService {
         return jwt.generateToken(user);
     }
 
+    // ✅ Méthode corrigée pour récupérer l'utilisateur connecté
+    public User getCurrentUser(HttpServletRequest request) {
+        String token = jwt.resolveToken(request);
+        String phone = jwt.getSubjectFromToken(token); // ✅ CORRIGÉ ICI
+        return userRepo.findByPhone(phone)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    }
 }
