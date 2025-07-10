@@ -4,6 +4,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,7 @@ public class JwtTokenProvider {
                 .collect(Collectors.toSet());
 
         return Jwts.builder()
-                .setSubject(user.getPhone())
+                .setSubject(user.getPhone()) // ou .setSubject(user.getEmail()) si tu préfères
                 .claim("roles", prefixedRoles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
@@ -73,5 +74,14 @@ public class JwtTokenProvider {
             System.out.println("JWT invalide : " + e.getMessage());
             return false;
         }
+    }
+
+    // ✅ Méthode ajoutée : pour extraire le token depuis la requête HTTP
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7); // supprime le "Bearer "
+        }
+        return null;
     }
 }
