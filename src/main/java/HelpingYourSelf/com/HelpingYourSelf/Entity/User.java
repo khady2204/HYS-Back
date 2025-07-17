@@ -58,7 +58,8 @@ public class User {
 
     private String lastLoginIp;
     private String deviceInfo;
-
+    @Column(length = 500)
+    private String token;
 
     public String getUsername() {
         return email != null ? email : phone;

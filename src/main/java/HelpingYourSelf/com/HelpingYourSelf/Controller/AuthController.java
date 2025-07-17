@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:8100")
 @RestController
@@ -77,6 +78,22 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
+        String idToken = payload.get("idToken");
+        if (idToken == null || idToken.isEmpty()) {
+            return ResponseEntity.badRequest().body("idToken manquant");
+        }
+
+        try {
+            String jwt = auth.processGoogleToken(idToken); // Vérification et génération du token
+            return ResponseEntity.ok(Map.of("token", jwt));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Authentification Google échouée : " + e.getMessage());
+        }
+    }
+
 
 
 }
