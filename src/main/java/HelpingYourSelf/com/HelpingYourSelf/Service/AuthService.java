@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -63,12 +64,19 @@ public class AuthService {
         User user = userRepo.findByPhone(req.getPhone())
                 .orElseThrow(() -> new RuntimeException("Numéro non trouvé"));
 
+        if (user.getOtpExpiration() != null && user.getOtpExpiration().isAfter(Instant.now())) {
+            Duration reste = Duration.between(Instant.now(), user.getOtpExpiration());
+            if (reste.getSeconds() > 240) {
+                throw new RuntimeException("Veuillez patienter avant de renvoyer un OTP.");
+            }
+        }
+
         String code = String.valueOf(new Random().nextInt(899999) + 100000);
         user.setOtp(code);
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
 
-        System.out.println("[TEST] Code OTP : " + code);
+        System.out.println("[RESEND] Nouveau code OTP : " + code);
         return code;
     }
 
@@ -105,14 +113,49 @@ public class AuthService {
         return otp;
     }
 
+    public void verifyResetOtp(VerifyOtpRequest req) {
+        User user = userRepo.findByPhone(req.getPhone())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (user.getOtpLockUntil() != null && user.getOtpLockUntil().isAfter(Instant.now())) {
+            throw new RuntimeException("Trop de tentatives échouées. Réessayez après " + user.getOtpLockUntil());
+        }
+
+        if (user.getOtp() == null || !user.getOtp().equals(req.getOtp())) {
+            int maxAttempts = 5;
+            user.setOtpAttempts(user.getOtpAttempts() + 1);
+
+            if (user.getOtpAttempts() >= maxAttempts) {
+                user.setOtpLockUntil(Instant.now().plusSeconds(15 * 60));
+                user.setOtpAttempts(0);
+            }
+
+            userRepo.save(user);
+            throw new RuntimeException("OTP incorrect");
+        }
+
+        if (user.getOtpExpiration() == null || user.getOtpExpiration().isBefore(Instant.now())) {
+            throw new RuntimeException("OTP expiré");
+        }
+
+        user.setIsOtpVerified(true);
+        user.setOtpAttempts(0);
+        user.setOtpLockUntil(null);
+        userRepo.save(user);
+    }
+
     public void confirmReset(ResetConfirmRequest req) {
         User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Invalide"));
-        if (!user.getOtp().equals(req.getOtp()))
-            throw new RuntimeException("OTP incorrect");
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        if (!Boolean.TRUE.equals(user.getIsOtpVerified())) {
+            throw new RuntimeException("OTP non vérifié");
+        }
+
         user.setPassword(encoder.encode(req.getNewPassword()));
         user.setOtp(null);
         user.setOtpExpiration(null);
+        user.setIsOtpVerified(false);
         userRepo.save(user);
     }
 
@@ -144,7 +187,7 @@ public class AuthService {
         }
 
         if (!user.isEnabled()) {
-            throw new RuntimeException("Compte non activé. Veuillez vérifier votre OTP.");
+            throw new RuntimeException("Compte non activé.");
         }
 
         user.setLastLoginIp(ip);
@@ -153,11 +196,38 @@ public class AuthService {
         return jwt.generateToken(user);
     }
 
-    // ✅ Méthode corrigée pour récupérer l'utilisateur connecté
     public User getCurrentUser(HttpServletRequest request) {
         String token = jwt.resolveToken(request);
-        String phone = jwt.getSubjectFromToken(token); // ✅ CORRIGÉ ICI
+        String phone = jwt.getSubjectFromToken(token);
         return userRepo.findByPhone(phone)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    }
+
+    public void createSuperAdmin(RegisterRequest req) {
+        if (!req.getPassword().equals(req.getConfirmPassword())) {
+            throw new RuntimeException("Les mots de passe ne correspondent pas.");
+        }
+
+        if (userRepo.findByPhone(req.getPhone()).isPresent()) {
+            throw new RuntimeException("Ce numéro est déjà utilisé.");
+        }
+
+        if (userRepo.findByEmail(req.getEmail()).isPresent()) {
+            throw new RuntimeException("Cet email est déjà utilisé.");
+        }
+
+        User user = new User();
+        user.setNom(req.getNom());
+        user.setPrenom(req.getPrenom());
+        user.setAdresse(req.getAdresse());
+        user.setPhone(req.getPhone());
+        user.setEmail(req.getEmail());
+        user.setSexe(req.getSexe());
+        user.setDatenaissance(req.getDatenaissance());
+        user.setPassword(encoder.encode(req.getPassword()));
+        user.setEnabled(true);
+        user.setRoles(Set.of(Role.SUPERADMIN));
+
+        userRepo.save(user);
     }
 }

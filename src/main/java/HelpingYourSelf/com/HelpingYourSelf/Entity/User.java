@@ -22,7 +22,11 @@ public class User {
     private String nom;
     private String prenom;
     private String adresse;
+    @Column(unique = true, nullable = false)
     private String email;
+
+
+
     private String phone;
     private String sexe;
 
@@ -46,11 +50,23 @@ public class User {
     @Builder.Default
     private boolean blocked = false;
 
+    private int otpAttempts = 0;
+    private Instant otpLockUntil;
+
+
     private String otp;
     private Instant otpExpiration;
+    private Boolean isOtpVerified = false;
+
 
     private String lastLoginIp;
     private String deviceInfo;
+
+
+    public String getUsername() {
+        return email != null ? email : phone;
+    }
+
 
     @ManyToOne
     @JoinColumn(name = "gestionnaire_id")
