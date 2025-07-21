@@ -7,14 +7,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
 @CrossOrigin(origins = "http://localhost:8100")
-@Controller
 public class AuthRedirectController {
 
     @GetMapping("/auth-success")
-    public String authSuccess(@AuthenticationPrincipal OAuth2User user, Model model) {
-        model.addAttribute("name", user.getAttribute("name"));
-        model.addAttribute("email", user.getAttribute("email"));
-        return "index"; // Cela va afficher templates/index.html
+    public Map<String, Object> authSuccess(@AuthenticationPrincipal OAuth2User user) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("name", user.getAttribute("name"));
+        response.put("email", user.getAttribute("email"));
+        return response;
     }
 }

@@ -1,18 +1,22 @@
 package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
+import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 
-import java.util.HashMap;
-import java.util.Map;
 
+
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:8100")
 @RestController
@@ -21,11 +25,12 @@ import java.util.Collections;
 public class AuthController {
 
     private final AuthService auth;
+    private final UserRepository userRepo;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         auth.register(request);
-        return ResponseEntity.ok(Map.of("message", "Inscription réussie"));
+        return ResponseEntity.ok("Inscription réussie");
     }
 
     @PostMapping("/login")
@@ -36,33 +41,15 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody OtpLoginRequest req) {
-        try {
-            String otp = auth.sendOtp(req);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "OTP envoyé avec succès.");
-            response.put("otp", otp); // À supprimer en production pour la sécurité
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.singletonMap("error", "Échec de l’envoi de l’OTP."));
-        }
+        String otp = auth.sendOtp(req);
+        return ResponseEntity.ok("Code OTP (test) : " + otp);
     }
-
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyOtp(@RequestBody OtpVerifyRequest req, HttpServletRequest request) {
-        try {
-            String token = auth.verifyOtp(req, request.getRemoteAddr());
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "OTP vérifié avec succès");
-            response.put("token", token);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Collections.singletonMap("error", "OTP invalide ou expiré."));
-        }
+    public ResponseEntity<?> verifyOtp(@RequestBody OtpVerifyRequest req, HttpServletRequest http) {
+        String token = auth.verifyOtp(req, http.getRemoteAddr());
+        return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
-
 
 
 
@@ -100,15 +87,33 @@ public class AuthController {
         }
     }
 
+<<<<<<< HEAD
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
-            System.out.println("Token à invalider : " + token);
+    public ResponseEntity<?> logout(@AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("Non authentifié");
         }
-        return ResponseEntity.ok("Déconnexion réussie.");
+
+        currentUser.setOnline(false);
+        currentUser.setLastOnlineAt(Instant.now());
+        userRepo.save(currentUser);
+
+        return ResponseEntity.ok("Déconnexion réussie");
+=======
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
+        String idToken = payload.get("idToken");
+        if (idToken == null || idToken.isEmpty()) {
+            return ResponseEntity.badRequest().body("idToken manquant");
+        }
+
+        try {
+            String jwt = auth.processGoogleToken(idToken); // Vérification et génération du token
+            return ResponseEntity.ok(Map.of("token", jwt));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Authentification Google échouée : " + e.getMessage());
+        }
+>>>>>>> 4b7356ee16732955d616ab20591506bd33d107c5
     }
 
 
