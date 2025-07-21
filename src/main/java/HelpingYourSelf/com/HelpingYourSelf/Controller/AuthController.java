@@ -1,13 +1,20 @@
 package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
+import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 
+
+
+import java.time.Instant;
 import java.util.Collections;
 
 @CrossOrigin(origins = "http://localhost:8100")
@@ -17,6 +24,7 @@ import java.util.Collections;
 public class AuthController {
 
     private final AuthService auth;
+    private final UserRepository userRepo;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -77,6 +85,20 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("Non authentifié");
+        }
+
+        currentUser.setOnline(false);
+        currentUser.setLastOnlineAt(Instant.now());
+        userRepo.save(currentUser);
+
+        return ResponseEntity.ok("Déconnexion réussie");
+    }
+
 
 
 }

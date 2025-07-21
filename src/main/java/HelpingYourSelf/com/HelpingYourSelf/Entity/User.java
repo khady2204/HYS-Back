@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Entity;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 
 @Entity
 @Getter
@@ -26,8 +28,6 @@ public class User {
     private String adresse;
     @Column(unique = true, nullable = false)
     private String email;
-
-
 
     private String phone;
     private String sexe;
@@ -59,11 +59,32 @@ public class User {
     private String lastLoginIp;
     private String deviceInfo;
 
+    @Column(name = "is_online")
+    private boolean isOnline = false;
+
+    @Column(name = "last_online_at")
+    private Instant lastOnlineAt;
+
+
 
     public String getUsername() {
         return email != null ? email : phone;
     }
 
+    // Bio facultative
+    @Column(length = 500)
+    private String bio;
+
+    // URL ou base64 de l'image de profil
+    private String profileImage;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_interet",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "interet_id")
+    )
+    // private List<Interet> interets;
 
     @ManyToOne
     @JoinColumn(name = "gestionnaire_id")
