@@ -58,6 +58,7 @@ public class User {
 
     private String lastLoginIp;
     private String deviceInfo;
+<<<<<<< HEAD
 
     @Column(name = "is_online")
     private boolean isOnline = false;
@@ -66,6 +67,10 @@ public class User {
     private Instant lastOnlineAt;
 
 
+=======
+    @Column(length = 500)
+    private String token;
+>>>>>>> 4b7356ee16732955d616ab20591506bd33d107c5
 
     public String getUsername() {
         return email != null ? email : phone;

@@ -16,6 +16,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:8100")
 @RestController
@@ -86,6 +87,7 @@ public class AuthController {
         }
     }
 
+<<<<<<< HEAD
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal User currentUser) {
         if (currentUser == null) {
@@ -97,6 +99,21 @@ public class AuthController {
         userRepo.save(currentUser);
 
         return ResponseEntity.ok("Déconnexion réussie");
+=======
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
+        String idToken = payload.get("idToken");
+        if (idToken == null || idToken.isEmpty()) {
+            return ResponseEntity.badRequest().body("idToken manquant");
+        }
+
+        try {
+            String jwt = auth.processGoogleToken(idToken); // Vérification et génération du token
+            return ResponseEntity.ok(Map.of("token", jwt));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Authentification Google échouée : " + e.getMessage());
+        }
+>>>>>>> 4b7356ee16732955d616ab20591506bd33d107c5
     }
 
 
