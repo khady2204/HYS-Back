@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
                         .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-                        .anyRequest().permitAll() // Autorise tout pour le frontend Angular
+                        .anyRequest().permitAll() 
                 )
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
