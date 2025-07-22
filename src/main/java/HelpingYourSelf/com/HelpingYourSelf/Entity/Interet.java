@@ -22,7 +22,7 @@ public class Interet {
     private String nom; // Exemple : "Musique", "Sport", "Lecture"
 
     @ManyToMany(mappedBy = "interets")
-    @JsonIgnore // 🔥 Empêche la boucle infinie :
+    @JsonIgnore // 🔥 Empêche la boucle infinie
     @ToString.Exclude
     private List<User> users;
 
