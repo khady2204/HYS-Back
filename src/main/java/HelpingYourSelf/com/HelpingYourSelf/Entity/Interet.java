@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,8 +21,8 @@ public class Interet {
 
     private String nom; // Exemple : "Musique", "Sport", "Lecture"
 
-    // (Facultatif) Pour une relation bidirectionnelle :
     @ManyToMany(mappedBy = "interets")
+    @JsonIgnore // 🔥 Empêche la boucle infinie
     @ToString.Exclude
     private List<User> users;
 
@@ -38,4 +39,3 @@ public class Interet {
         return Objects.hash(id);
     }
 }
-
