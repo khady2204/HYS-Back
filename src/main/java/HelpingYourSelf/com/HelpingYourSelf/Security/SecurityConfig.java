@@ -42,18 +42,22 @@ public class SecurityConfig {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 })
             )
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
-            .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/suggestions/**").permitAll()
-            .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
-            .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-            .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-            .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER") // ✅ AJOUT ESSENTIEL
-            .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
-            .anyRequest().authenticated()
-        )
+            .authorizeHttpRequests(auth -> auth
+                // ✅ Routes publiques
+                .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/suggestions/**").permitAll()
+                .requestMatchers("/api/interets/listeinterets").permitAll() // ✅ Autoriser cette route
 
+                // ✅ Routes sécurisées
+                .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
+                .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
+                .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
+                .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
+
+                .anyRequest().authenticated()
+            )
             .oauth2Login(oauth -> oauth
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService)
