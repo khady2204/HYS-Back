@@ -26,32 +26,40 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {}) // CORS activé
-                .csrf(csrf -> csrf.disable()) // CSRF désactivé pour l'API
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT = stateless
-                .formLogin(form -> form.disable()) // Pas de formulaire Spring
-                .httpBasic(basic -> basic.disable()) // Pas d'auth basique
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            // Renvoie 401 au lieu de rediriger vers /login
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("Unauthorized");
-                        })
+            .cors(cors -> {})
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable())
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                })
+            )
+            .authorizeHttpRequests(auth -> auth
+                // ✅ Routes publiques
+                .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/suggestions/**").permitAll()
+                .requestMatchers("/api/interets/listeinterets").permitAll() // ✅ Autoriser cette route
+
+                // ✅ Routes sécurisées
+                .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
+                .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
+                .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
+                .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
+                .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
+
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth -> oauth
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
                 )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/login**", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/oauth2/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-                        .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-                        .anyRequest().permitAll() 
-                )
-                .oauth2Login(oauth -> oauth
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .defaultSuccessUrl("/auth-success", true) // En cas de succès Google, appelle ce point
-                )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .defaultSuccessUrl("/auth-success", true)
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
