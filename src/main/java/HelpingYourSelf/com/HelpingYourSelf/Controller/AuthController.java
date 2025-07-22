@@ -1,21 +1,31 @@
 package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
+import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 
+
+
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:8100")
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService auth;
+    private final UserRepository userRepo;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -41,15 +51,71 @@ public class AuthController {
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
-    @PostMapping("/reset")
-    public ResponseEntity<?> reset(@RequestBody ResetRequest req) {
+
+
+
+    // Étape 1 : Demande d’OTP
+    @PostMapping("/reset/request")
+    public ResponseEntity<?> requestResetOtp(@RequestBody ResetRequest req) {
         String otp = auth.sendResetOtp(req);
-        return ResponseEntity.ok("OTP reset (test) : " + otp);
+        return ResponseEntity.ok("OTP envoyé pour réinitialisation");
     }
 
-    @PostMapping("/reset/confirm")
-    public ResponseEntity<?> confirm(@RequestBody ResetConfirmRequest req) {
-        auth.confirmReset(req);
-        return ResponseEntity.ok("Mot de passe réinitialisé");
+    // Étape 2 : Vérification du code OTP
+    @PostMapping("/reset/verify-otp")
+    public ResponseEntity<?> verifyResetOtp(@RequestBody VerifyOtpRequest req) {
+        try {
+            auth.verifyResetOtp(req);
+            return ResponseEntity.ok("OTP vérifié avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    // Étape 3 : Réinitialisation du mot de passe
+    @PostMapping("/reset/password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetConfirmRequest req) {
+        if (!req.getNewPassword().equals(req.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("Les mots de passe ne correspondent pas");
+        }
+
+        try {
+            auth.confirmReset(req);
+            return ResponseEntity.ok("Mot de passe réinitialisé avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+<<<<<<< HEAD
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("Non authentifié");
+        }
+
+        currentUser.setOnline(false);
+        currentUser.setLastOnlineAt(Instant.now());
+        userRepo.save(currentUser);
+
+        return ResponseEntity.ok("Déconnexion réussie");
+=======
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
+        String idToken = payload.get("idToken");
+        if (idToken == null || idToken.isEmpty()) {
+            return ResponseEntity.badRequest().body("idToken manquant");
+        }
+
+        try {
+            String jwt = auth.processGoogleToken(idToken); // Vérification et génération du token
+            return ResponseEntity.ok(Map.of("token", jwt));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Authentification Google échouée : " + e.getMessage());
+        }
+>>>>>>> 4b7356ee16732955d616ab20591506bd33d107c5
+    }
+
+
+
 }
