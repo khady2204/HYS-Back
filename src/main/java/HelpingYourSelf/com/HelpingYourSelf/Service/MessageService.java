@@ -85,7 +85,7 @@ public class MessageService {
                 .sorted((e1, e2) -> {
                     Instant last1 = e1.getValue().get(e1.getValue().size() - 1).getTimestamp();
                     Instant last2 = e2.getValue().get(e2.getValue().size() - 1).getTimestamp();
-                    return last2.compareTo(last1); // décroissant
+                    return last2.compareTo(last1);
                 })
                 .collect(LinkedHashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
