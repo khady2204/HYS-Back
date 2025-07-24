@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
                         .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-                        .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER") // ✅ AJOUT ESSENTIEL
+                        .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
                         .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
                         .anyRequest().authenticated()
                 )

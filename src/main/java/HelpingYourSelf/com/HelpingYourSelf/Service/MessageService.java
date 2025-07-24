@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +19,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final MessageRepository messageRepo;
 
     public MessageResponse sendMessage(User sender, MessageRequest request) {
         User senderEntity = userRepository.findById(sender.getId())
@@ -63,4 +64,33 @@ public class MessageService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
+        List<Message> all = messageRepo.findBySenderOrReceiver(currentUser, currentUser);
+
+        Map<User, List<Message>> grouped = new HashMap<>();
+
+        for (Message m : all) {
+            User ami = m.getSender().equals(currentUser) ? m.getReceiver() : m.getSender();
+            grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
+        }
+
+        // Trier les messages de chaque conversation
+        for (List<Message> messages : grouped.values()) {
+            messages.sort(Comparator.comparing(Message::getTimestamp)); // du plus ancien au plus récent
+        }
+
+        //  Retourner un Map trié par date du dernier message (du plus récent au plus ancien)
+        return grouped.entrySet().stream()
+                .sorted((e1, e2) -> {
+                    Instant last1 = e1.getValue().get(e1.getValue().size() - 1).getTimestamp();
+                    Instant last2 = e2.getValue().get(e2.getValue().size() - 1).getTimestamp();
+                    return last2.compareTo(last1); // décroissant
+                })
+                .collect(LinkedHashMap::new,
+                        (map, entry) -> map.put(entry.getKey(), entry.getValue()),
+                        Map::putAll);
+    }
+
+
 }

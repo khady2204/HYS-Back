@@ -2,17 +2,13 @@ package HelpingYourSelf.com.HelpingYourSelf.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class PublicUserDTO {
+public class UserSummary {
+    private Long id;
     private String prenom;
     private String nom;
-    private String email;
-    private String adresse;
-    private String ProfileImage;
-
+    private String profileImage;
+    private String phone;
 }
-

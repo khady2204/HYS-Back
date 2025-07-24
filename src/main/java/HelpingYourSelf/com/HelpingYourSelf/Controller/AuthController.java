@@ -94,7 +94,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Non authentifié");
         }
 
-        currentUser.setOnline(false);
+        currentUser.setIsOnline(false);
         currentUser.setLastOnlineAt(Instant.now());
         userRepo.save(currentUser);
 

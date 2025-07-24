@@ -8,6 +8,7 @@ import lombok.*;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -60,7 +61,8 @@ public class User {
     private String deviceInfo;
 
     @Column(name = "is_online")
-    private boolean isOnline = false;
+    private Boolean isOnline = false;
+
 
     @Column(name = "last_online_at")
     private Instant lastOnlineAt;
@@ -86,16 +88,18 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "interet_id")
     )
-    // private List<Interet> interets;
+     private List<Interet> interets;
 
     @ManyToOne
     @JoinColumn(name = "gestionnaire_id")
+    @JsonIgnore
     private User gestionnaire;
 
     private Instant createdAt;
 
     @ManyToOne
     @JoinColumn(name = "created_by_id")
+    @JsonIgnore
     private User createdBy;
 
     @PrePersist

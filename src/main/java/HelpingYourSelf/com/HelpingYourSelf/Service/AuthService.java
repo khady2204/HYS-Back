@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -261,4 +262,12 @@ public class AuthService {
             throw new RuntimeException("Token Google invalide");
         }
     }
+
+    public User getCurrentUser(HttpServletRequest request) {
+        String token = jwt.resolveToken(request);
+        String phone = jwt.getSubjectFromToken(token);
+        return userRepo.findByPhone(phone)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    }
+
 }

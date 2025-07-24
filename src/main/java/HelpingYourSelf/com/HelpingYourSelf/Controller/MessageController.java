@@ -1,7 +1,9 @@
 package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
+import HelpingYourSelf.com.HelpingYourSelf.DTO.DiscussionResponse;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageResponse;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.UserSummary;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails;
 import HelpingYourSelf.com.HelpingYourSelf.Service.MessageService;
@@ -10,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
+
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -50,4 +55,30 @@ public class MessageController {
         List<MessageResponse> messages = messageService.getMessagesBetweenUsers(currentUser.getId(), userId);
         return ResponseEntity.ok(messages);
     }
+
+    @GetMapping("/discussions")
+    public ResponseEntity<?> getMyGroupedMessages(@AuthenticationPrincipal(expression = "user") User currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("Non authentifié");
+        }
+
+        Map<User, List<Message>> grouped = messageService.getGroupedDiscussions(currentUser);
+
+        List<DiscussionResponse> discussions = grouped.entrySet().stream()
+                .map(entry -> new DiscussionResponse(
+                        new UserSummary(
+                                entry.getKey().getId(),
+                                entry.getKey().getPrenom(),
+                                entry.getKey().getNom(),
+                                entry.getKey().getProfileImage(),
+                                entry.getKey().getPhone()
+                        ),
+                        entry.getValue()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(discussions);
+    }
+
+
 }
