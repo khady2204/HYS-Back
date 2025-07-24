@@ -5,6 +5,7 @@ import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageResponse;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UserSummary;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
+import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails;
 import HelpingYourSelf.com.HelpingYourSelf.Service.MessageService;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -24,6 +26,8 @@ import java.util.Map;
 public class MessageController {
 
     private final MessageService messageService;
+    private final UserRepository UserRepository;
+
 
     // ✅ Envoie d’un message
     @PostMapping
@@ -80,5 +84,32 @@ public class MessageController {
         return ResponseEntity.ok(discussions);
     }
 
+    @GetMapping("/discussions/search")
+    public ResponseEntity<?> searchDiscussion(
+            @AuthenticationPrincipal(expression = "user") User currentUser,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String prenom
+    ) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("Non authentifié");
+        }
 
+        Optional<User> optionalAmi = Optional.empty();
+
+        if (phone != null && !phone.isBlank()) {
+            optionalAmi = UserRepository.findByPhone(phone);
+        } else if (nom != null && prenom != null) {
+            optionalAmi = UserRepository.findByNomAndPrenom(nom.trim(), prenom.trim());
+        }
+
+        if (optionalAmi.isEmpty()) {
+            return ResponseEntity.status(404).body("Aucun utilisateur trouvé avec les informations fournies.");
+        }
+
+        List<Message> messages = messageService.getDiscussionWithUser(currentUser, optionalAmi.get().getId());
+
+
+        return ResponseEntity.ok(messages);
+    }
 }
