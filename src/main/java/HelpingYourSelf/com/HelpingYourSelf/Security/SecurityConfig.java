@@ -32,40 +32,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> {})
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.disable())
-            .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                })
-            )
-            .authorizeHttpRequests(auth -> auth
-                // ✅ Routes publiques
-                .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/suggestions/**").permitAll()
-                .requestMatchers("/api/interets/listeinterets").permitAll() // ✅ Autoriser cette route
-
-                // ✅ Routes sécurisées
-                .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
-                .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-                .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
-                .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
-                .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
-
-                .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth -> oauth
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService)
+                .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
                 )
-                .defaultSuccessUrl("/auth-success", true)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/suggestions/**").permitAll()
+                        .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
+                        .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
+                        .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
+                        .anyRequest().authenticated()
+                )
+
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .defaultSuccessUrl("/auth-success", true)
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
