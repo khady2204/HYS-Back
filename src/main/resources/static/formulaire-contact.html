@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajouter un Contact</title>
+</head>
+<body>
+  <h2>Formulaire d'ajout de contact</h2>
+  <form id="contactForm">
+    <label>Nom : <input type="text" name="nom" required></label><br><br>
+    <label>Prénom : <input type="text" name="prenom" required></label><br><br>
+    <label>Adresse : <input type="text" name="adresse"></label><br><br>
+    <label>Sexe : 
+      <select name="sexe">
+        <option value="Homme">Homme</option>
+        <option value="Femme">Femme</option>
+      </select>
+    </label><br><br>
+    <label>Email : <input type="email" name="email" required></label><br><br>
+    <label>
+      Favori :
+      <input type="checkbox" name="favori">
+    </label><br><br>
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <p id="resultat"></p>
+
+  <script>
+    const form = document.getElementById('contactForm');
+    const resultat = document.getElementById('resultat');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const contact = {
+        nom: formData.get('nom'),
+        prenom: formData.get('prenom'),
+        adresse: formData.get('adresse'),
+        sexe: formData.get('sexe'),
+        email: formData.get('email'),
+        favori: formData.get('favori') === 'on'
+      };
+
+      try {
+        const response = await fetch('/api/contacts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(contact)
+        });
+
+        if (response.ok) {
+          resultat.textContent = '✅ Contact ajouté avec succès !';
+          form.reset();
+        } else {
+          resultat.textContent = '❌ Erreur lors de l’ajout';
+        }
+      } catch (error) {
+        console.error(error);
+        resultat.textContent = '❌ Erreur de connexion au serveur';
+      }
+    });
+  </script>
+</body>
+</html>
