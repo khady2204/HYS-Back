@@ -43,7 +43,7 @@ public class MessageController {
         }
     }
 
-    // ✅ Récupération des messages entre deux utilisateurs
+    //  Récupération des messages entre deux utilisateurs
     @GetMapping("/{userId}")
     public ResponseEntity<List<MessageResponse>> getMessages(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
                                                              @PathVariable Long userId) {
