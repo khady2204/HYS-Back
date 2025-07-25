@@ -22,11 +22,12 @@ public class InteretController {
         return ResponseEntity.ok(saved);
     }
 
-    // ✅ GET /api/interets — Liste rapide
+    // ✅ GET /api/interets — Liste rapide test
     @GetMapping
     public ResponseEntity<List<Interet>> getAll() {
         return ResponseEntity.ok(interetRepository.findAll());
     }
+
 
     // ✅ GET /api/listeinterets — alias personnalisé
     @GetMapping("/listeinterets")
