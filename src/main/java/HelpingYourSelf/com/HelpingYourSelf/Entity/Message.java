@@ -1,6 +1,10 @@
 package HelpingYourSelf.com.HelpingYourSelf.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 
 @Entity
@@ -13,11 +17,14 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
+    @JsonIgnore
     private User sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id", nullable = false)
+    @JsonIgnore
     private User receiver;
+
 
     @Column(nullable = false, length = 1000)
     private String content;
