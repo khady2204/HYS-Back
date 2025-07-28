@@ -3,11 +3,14 @@ package HelpingYourSelf.com.HelpingYourSelf.Controller;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
+import com.twilio.rest.api.v2010.account.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/gestion")
@@ -36,5 +39,9 @@ public class ManagerController {
         userRepo.save(u);
         return ResponseEntity.ok("Compte débloqué");
     }
+
+
+
+
 }
 
