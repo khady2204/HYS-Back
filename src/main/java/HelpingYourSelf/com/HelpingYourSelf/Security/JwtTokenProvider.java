@@ -30,18 +30,24 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(User user) {
-        Set<String> prefixedRoles = user.getRoles().stream()
-                .map(role -> "ROLE_" + role.name())
-                .collect(Collectors.toSet());
-
         return Jwts.builder()
                 .setSubject(user.getPhone()) // ou .setSubject(user.getEmail()) si tu préfères
-                .claim("roles", prefixedRoles)
+                .claim("id", user.getId())
+                .claim("email", user.getEmail())
+                .claim("nom", user.getNom())
+                .claim("prenom", user.getPrenom())
+                .claim("phone", user.getPhone())
+                .claim("isOnline", user.getIsOnline())
+                .claim("profileImage", user.getProfileImage())
+                .claim("bio", user.getBio())
+                .claim("dateNaissance", user.getDatenaissance())
+
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs)) // durée en millisecondes
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
+
 
     @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {

@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByCreatedBy(User createdBy);
     List<User> findByIsOnlineTrue();
 
+
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.interets WHERE u.id = :id")
     Optional<User> findByIdWithInterets(@Param("id") Long id);
+
 }

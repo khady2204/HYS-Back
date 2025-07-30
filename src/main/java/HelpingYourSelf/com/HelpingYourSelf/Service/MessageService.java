@@ -21,6 +21,7 @@ public class MessageService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepo;
 
+
     public MessageResponse sendMessage(User sender, MessageRequest request) {
         User senderEntity = userRepository.findById(sender.getId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -98,6 +99,19 @@ public class MessageService {
                 .collect(LinkedHashMap::new,
                         (map, entry) -> map.put(entry.getKey(), entry.getValue()),
                         Map::putAll);
+    }
+
+    public List<Message> getDiscussionWithUser(User currentUser, Long otherUserId) {
+        Optional<User> optionalOtherUser = userRepository.findById(otherUserId);
+        if (optionalOtherUser.isEmpty()) {
+            throw new RuntimeException("Utilisateur introuvable.");
+        }
+
+        User otherUser = optionalOtherUser.get();
+
+        return messageRepo.findBySenderAndReceiverOrReceiverAndSender(
+                currentUser, otherUser, currentUser, otherUser
+        );
     }
 
 
