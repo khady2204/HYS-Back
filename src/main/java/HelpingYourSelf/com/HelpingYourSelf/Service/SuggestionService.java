@@ -45,7 +45,13 @@ public class SuggestionService {
             s.setNom(autre.getNom());
             s.setPrenom(autre.getPrenom());
             s.setCompatibilite(compatibilite);
-            s.setInteretsCommuns("Intérêts communs : " + nbCommuns);
+            // s.setInteretsCommuns("Intérêts communs : " + nbCommuns);
+            if (nbCommuns > 0) {
+                String nomsInterets = String.join(", ", communs.stream().map(Interet::getNom).toList());
+                s.setInteretsCommuns("Intérêts communs : " + nomsInterets);
+            } else {
+                s.setInteretsCommuns("Intérêts communs : aucun");
+            }
 
             // ❗ Personnalise ici avec autre.getPhotoUrl() si c’est disponible
             s.setPhotoUrl("https://example.com/avatar.jpg");

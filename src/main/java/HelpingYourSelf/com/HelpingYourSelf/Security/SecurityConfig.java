@@ -48,6 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/suggestions/**").permitAll()
                 .requestMatchers("/api/interets/listeinterets").permitAll() // ✅ Autoriser cette route
+                .requestMatchers(HttpMethod.POST, "/api/interets/user").permitAll() // Autoriser le nouvel endpoint POST
 
                 // ✅ Routes sécurisées
                 .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
