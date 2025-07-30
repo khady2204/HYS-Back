@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class SuggestionResponse {
+    private Long userId;
     private String nom;
     private String prenom;
     private String photoUrl;

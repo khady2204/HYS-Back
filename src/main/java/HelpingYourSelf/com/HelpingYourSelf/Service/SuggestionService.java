@@ -42,6 +42,7 @@ public class SuggestionService {
             int compatibilite = total == 0 ? 0 : (int) ((2.0 * nbCommuns / total) * 100);
 
             SuggestionResponse s = new SuggestionResponse();
+            s.setUserId(autre.getId());
             s.setNom(autre.getNom());
             s.setPrenom(autre.getPrenom());
             s.setCompatibilite(compatibilite);
