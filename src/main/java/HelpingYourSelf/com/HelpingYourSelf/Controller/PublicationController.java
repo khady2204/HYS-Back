@@ -53,5 +53,14 @@ public class PublicationController {
         return ResponseEntity.ok(publicationService.supprimerPublication(id, user));
     }
 
+    @PutMapping("/{id}/update-texte")
+    public ResponseEntity<?> modifierTextePublication(
+            @PathVariable Long id,
+            @RequestParam String nouveauTexte,
+            @AuthenticationPrincipal(expression = "user") User user) {
+        return ResponseEntity.ok(publicationService.updateTexte(id, nouveauTexte, user));
+    }
+
+
 }
 

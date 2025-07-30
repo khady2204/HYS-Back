@@ -102,6 +102,20 @@ public class PublicationService {
         }
     }
 
+    public String updateTexte(Long id, String nouveauTexte, User user) {
+        Publication pub = publicationRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Publication introuvable"));
+
+        if (!pub.getAuteur().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Vous n'avez pas le droit de modifier cette publication.");
+        }
+
+        pub.setTexte(nouveauTexte);
+        publicationRepo.save(pub);
+        return "Texte de la publication mise à jour avec succès.";
+    }
+
+
 
 }
 

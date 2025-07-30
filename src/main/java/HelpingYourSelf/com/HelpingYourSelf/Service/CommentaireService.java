@@ -23,9 +23,7 @@ public class CommentaireService {
     @Autowired
     private CommentaireRepository commentaireRepo;
 
-    /**
-     * Ajouter un commentaire (ou réponse à un commentaire)
-     */
+
     public CommentaireDTO commenter(User user, Long publicationId, String contenu, Long parentId) {
         Publication pub = publicationRepo.findById(publicationId)
                 .orElseThrow(() -> new RuntimeException("Publication non trouvée"));
@@ -46,9 +44,7 @@ public class CommentaireService {
         return mapToDTO(commentaire);
     }
 
-    /**
-     * Liker ou disliker un commentaire
-     */
+
     public String toggleLike(User user, Long id) {
         Commentaire commentaire = commentaireRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commentaire non trouvé"));
@@ -63,17 +59,13 @@ public class CommentaireService {
         return "Like sur commentaire mis à jour.";
     }
 
-    /**
-     * Récupérer tous les commentaires racines (sans parent) d’une publication
-     */
+
     public List<CommentaireDTO> getCommentairesAvecReponses(Long pubId) {
         List<Commentaire> commentaires = commentaireRepo.findByPublicationIdAndParentIsNull(pubId);
         return commentaires.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-    /**
-     * Supprimer un commentaire s’il est de l’auteur connecté
-     */
+
     public String supprimerCommentaire(Long id, User user) {
         Commentaire c = commentaireRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commentaire non trouvé"));
@@ -86,9 +78,7 @@ public class CommentaireService {
         return "Commentaire supprimé.";
     }
 
-    /**
-     * Convertir un commentaire (et ses réponses) en DTO
-     */
+
     private CommentaireDTO mapToDTO(Commentaire commentaire) {
         List<CommentaireDTO> reponsesDTO = commentaire.getReponses() != null
                 ? commentaire.getReponses().stream().map(this::mapToDTO).toList()

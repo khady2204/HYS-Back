@@ -25,8 +25,8 @@ public class Publication {
 
     private String texte;
 
-    private String mediaUrl; // photo ou vidéo
-    private String mediaType; // "image" ou "video"
+    private String mediaUrl;
+    private String mediaType;
 
     @ManyToOne
     private User auteur;
