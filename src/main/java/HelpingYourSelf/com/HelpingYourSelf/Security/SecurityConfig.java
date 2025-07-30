@@ -46,6 +46,8 @@ public class SecurityConfig {
                 // ✅ Routes publiques
                 .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/suggestions/**").permitAll()
                 .requestMatchers("/api/interets/listeinterets").permitAll() // ✅ Autoriser cette route
                 .requestMatchers(HttpMethod.POST, "/api/interets/user").permitAll() // Autoriser le nouvel endpoint POST

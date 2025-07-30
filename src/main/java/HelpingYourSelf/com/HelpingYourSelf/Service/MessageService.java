@@ -33,6 +33,14 @@ public class MessageService {
         message.setContent(request.getContent());
         message.setTimestamp(Instant.now());
 
+        if (request.getMediaFile() != null && !request.getMediaFile().isEmpty()) {
+            // TODO: Save the media file to storage and get the URL
+            // For now, just set a placeholder URL
+            String mediaUrl = "/media/" + request.getMediaFile().getOriginalFilename();
+            message.setMediaUrl(mediaUrl);
+            message.setMediaType(request.getMediaType());
+        }
+
         Message savedMessage = messageRepository.save(message);
 
         return new MessageResponse(

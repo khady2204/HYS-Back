@@ -25,12 +25,17 @@ public class Message {
     @JsonIgnore
     private User receiver;
 
-
     @Column(nullable = false, length = 1000)
     private String content;
 
     @Column(nullable = false)
     private Instant timestamp;
+
+    @Column(name = "media_url", length = 255)
+    private String mediaUrl;
+
+    @Column(name = "media_type", length = 50)
+    private String mediaType;
 
     public Message() {
         this.timestamp = Instant.now();
@@ -76,5 +81,21 @@ public class Message {
 
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    public void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 }
