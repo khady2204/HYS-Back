@@ -58,4 +58,32 @@ public class InteretController {
 
         return ResponseEntity.ok("Intérêts enregistrés avec succès");
     }
+
+    // GET /api/interets/user/actuel — Récupérer les intérêts de l'utilisateur connecté
+    @GetMapping("/user/actuel")
+    public ResponseEntity<List<Interet>> getCurrentUserInterets() {
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails userDetails = (HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails) principal;
+        Long userId = userDetails.getUser().getId();
+
+        // Récupérer l'utilisateur avec ses intérêts initialisés
+        java.util.Optional<HelpingYourSelf.com.HelpingYourSelf.Entity.User> userOpt = userRepository.findByIdWithInterets(userId);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).build();
+        }
+
+        HelpingYourSelf.com.HelpingYourSelf.Entity.User user = userOpt.get();
+        List<Interet> interets = user.getInterets();
+
+        return ResponseEntity.ok(interets);
+    }
 }
