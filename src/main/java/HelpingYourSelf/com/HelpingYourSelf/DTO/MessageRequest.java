@@ -13,7 +13,9 @@ public class MessageRequest {
 
     private MultipartFile mediaFile;
 
-    private String mediaType; // e.g., "image", "video"
+    private String mediaType; // e.g., "image", "video", "audio"
+
+    private Integer audioDuration;
 
     public Long getReceiverId() {
         return receiverId;
@@ -45,5 +47,13 @@ public class MessageRequest {
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public Integer getAudioDuration() {
+        return audioDuration;
+    }
+
+    public void setAudioDuration(Integer audioDuration) {
+        this.audioDuration = audioDuration;
     }
 }

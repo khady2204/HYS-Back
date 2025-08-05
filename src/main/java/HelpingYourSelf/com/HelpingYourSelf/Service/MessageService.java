@@ -37,6 +37,7 @@ public class MessageService {
         message.setReceiver(receiver);
         message.setContent(request.getContent());
         message.setTimestamp(Instant.now());
+        message.setAudioDuration(request.getAudioDuration());
 
         if (request.getMediaFile() != null && !request.getMediaFile().isEmpty()) {
             try {
@@ -71,7 +72,8 @@ public class MessageService {
                 savedMessage.getContent(),
                 savedMessage.getTimestamp(),
                 savedMessage.getMediaUrl(),
-                savedMessage.getMediaType()
+                savedMessage.getMediaType(),
+                savedMessage.getAudioDuration()
         );
     }
 
@@ -93,7 +95,8 @@ public class MessageService {
                         m.getContent(),
                         m.getTimestamp(),
                         m.getMediaUrl(),
-                        m.getMediaType()
+                        m.getMediaType(),
+                        m.getAudioDuration()
                 ))
                 .collect(Collectors.toList());
     }
