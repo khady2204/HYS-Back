@@ -49,12 +49,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/suggestions/**").permitAll()
                 .requestMatchers("/api/interets/listeinterets").permitAll() // ✅ Autoriser cette route
 
-                // ✅ Routes sécurisées
+
                 .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
                 .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
                 .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
                 .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
                 .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
+
+                    .requestMatchers("/ws-notifications/**", "/topic/**").permitAll()
 
                 .anyRequest().authenticated()
             )

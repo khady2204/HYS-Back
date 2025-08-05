@@ -8,6 +8,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.InteretRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,8 @@ public class UserController {
 
     private final UserRepository userRepo;
     private final InteretRepository interetRepository;
+
+
 
 
     //  Liste des utilisateurs
@@ -127,6 +130,39 @@ public class UserController {
 
         userRepo.save(currentUser);
         return ResponseEntity.ok("Profil mis à jour avec succès");
+    }
+
+
+    @PostMapping("/{id}/follow")
+    public ResponseEntity<?> follow(@PathVariable Long id, @AuthenticationPrincipal(expression = "user") User user) {
+        User toFollow = userRepo.findById(id).orElseThrow();
+        toFollow.getFollowers().add(user);
+        userRepo.save(toFollow);
+        return ResponseEntity.ok("Abonnement réussi.");
+    }
+
+    @PostMapping("/{id}/unfollow")
+    public ResponseEntity<?> unfollow(
+            @PathVariable Long id,
+            @AuthenticationPrincipal(expression = "user") User user) {
+
+        User toUnfollow = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        toUnfollow.getFollowers().remove(user);
+        userRepo.save(toUnfollow);
+
+        return ResponseEntity.ok("Désabonnement réussi.");
+    }
+
+    @GetMapping("/followers")
+    public ResponseEntity<Set<User>> getMesFollowers(@AuthenticationPrincipal(expression = "user") User user) {
+        return ResponseEntity.ok(user.getFollowers());
+    }
+
+    @GetMapping("/abonnements")
+    public ResponseEntity<Set<User>> getMesAbonnements(@AuthenticationPrincipal(expression = "user") User user) {
+        return ResponseEntity.ok(user.getAbonnements());
     }
 
 

@@ -3,6 +3,8 @@ package HelpingYourSelf.com.HelpingYourSelf.Service;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageResponse;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Notification;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.NotificationType;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.MessageRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
@@ -20,7 +22,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepo;
-
+    private final NotificationService notificationService;
 
     public MessageResponse sendMessage(User sender, MessageRequest request) {
         User senderEntity = userRepository.findById(sender.getId())
@@ -35,6 +37,16 @@ public class MessageService {
         message.setTimestamp(Instant.now());
 
         Message savedMessage = messageRepository.save(message);
+
+        // 🔔 Notification en temps réel au destinataire
+        if (!senderEntity.getId().equals(receiver.getId())) {
+            notificationService.envoyerNotification(Notification.builder()
+                    .emetteur(senderEntity)
+                    .destinataire(receiver)
+                    .message("Nouveau message de " + senderEntity.getPrenom())
+                    .type(NotificationType.MESSAGE)
+                    .build());
+        }
 
         return new MessageResponse(
                 savedMessage.getId(),
@@ -55,7 +67,7 @@ public class MessageService {
         messages.addAll(messageRepository.findBySenderAndReceiverOrderByTimestampAsc(user2, user1));
 
         return messages.stream()
-                .sorted((m1, m2) -> m1.getTimestamp().compareTo(m2.getTimestamp()))
+                .sorted(Comparator.comparing(Message::getTimestamp))
                 .map(m -> new MessageResponse(
                         m.getId(),
                         m.getSender().getId(),
@@ -76,12 +88,12 @@ public class MessageService {
             grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
         }
 
-        // Trier les messages de chaque conversation
+        // Trier chaque discussion par date
         for (List<Message> messages : grouped.values()) {
-            messages.sort(Comparator.comparing(Message::getTimestamp)); // du plus ancien au plus récent
+            messages.sort(Comparator.comparing(Message::getTimestamp));
         }
 
-        //  Retourner un Map trié par date du dernier message (du plus récent au plus ancien)
+        // Trier toutes les conversations par dernier message décroissant
         return grouped.entrySet().stream()
                 .sorted((e1, e2) -> {
                     Instant last1 = e1.getValue().get(e1.getValue().size() - 1).getTimestamp();
@@ -105,6 +117,4 @@ public class MessageService {
                 currentUser, otherUser, currentUser, otherUser
         );
     }
-
-
 }
