@@ -79,7 +79,12 @@ public class MessageService {
         Map<User, List<Message>> grouped = new HashMap<>();
 
         for (Message m : all) {
-            User ami = m.getSender().equals(currentUser) ? m.getReceiver() : m.getSender();
+            // Les entités User peuvent être différentes instances représentant le même utilisateur.
+            // Comparer directement les objets peut donc échouer. On compare les identifiants
+            // pour déterminer si le message a été envoyé par l'utilisateur courant.
+            User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
+                    ? m.getReceiver()
+                    : m.getSender();
             grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
         }
 
