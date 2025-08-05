@@ -9,6 +9,10 @@ import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,11 +38,27 @@ public class MessageService {
         message.setTimestamp(Instant.now());
 
         if (request.getMediaFile() != null && !request.getMediaFile().isEmpty()) {
-            // TODO: Save the media file to storage and get the URL
-            // For now, just set a placeholder URL
-            String mediaUrl = "/media/" + request.getMediaFile().getOriginalFilename();
-            message.setMediaUrl(mediaUrl);
-            message.setMediaType(request.getMediaType());
+            try {
+                String uploadDir = System.getProperty("user.dir") + "/uploads";
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String original = Objects.requireNonNull(request.getMediaFile().getOriginalFilename());
+                String extension = "";
+                int dot = original.lastIndexOf('.');
+                if (dot >= 0) {
+                    extension = original.substring(dot);
+                }
+
+                String fileName = UUID.randomUUID() + extension;
+                Path filePath = Paths.get(uploadDir, fileName);
+                request.getMediaFile().transferTo(filePath.toFile());
+
+                String mediaUrl = "/media/" + fileName;
+                message.setMediaUrl(mediaUrl);
+                message.setMediaType(request.getMediaType());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not store media file", e);
+            }
         }
 
         Message savedMessage = messageRepository.save(message);
@@ -48,7 +68,9 @@ public class MessageService {
                 savedMessage.getSender().getId(),
                 savedMessage.getReceiver().getId(),
                 savedMessage.getContent(),
-                savedMessage.getTimestamp()
+                savedMessage.getTimestamp(),
+                savedMessage.getMediaUrl(),
+                savedMessage.getMediaType()
         );
     }
 
@@ -68,7 +90,9 @@ public class MessageService {
                         m.getSender().getId(),
                         m.getReceiver().getId(),
                         m.getContent(),
-                        m.getTimestamp()
+                        m.getTimestamp(),
+                        m.getMediaUrl(),
+                        m.getMediaType()
                 ))
                 .collect(Collectors.toList());
     }

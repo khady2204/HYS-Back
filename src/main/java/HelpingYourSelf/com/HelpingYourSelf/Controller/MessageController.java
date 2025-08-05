@@ -9,9 +9,11 @@ import HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails;
 import HelpingYourSelf.com.HelpingYourSelf.Service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
 
 
@@ -26,9 +28,9 @@ public class MessageController {
     private final MessageService messageService;
 
     // ✅ Envoie d’un message
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendMessage(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
-                                         @Valid @RequestBody MessageRequest request) {
+                                         @Valid @ModelAttribute MessageRequest request) {
         if (currentUserDetails == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
