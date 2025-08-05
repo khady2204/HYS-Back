@@ -39,7 +39,7 @@ public class MessageControllerTest {
     @WithMockUser(username = "user", roles = {"USER"})
     public void testSendMessage_Success() throws Exception {
         Mockito.when(messageService.sendMessage(any(), any(MessageRequest.class)))
-                .thenReturn(new MessageResponse(1L, 1L, 2L, "Hello", null, "/media/image.png", "image"));
+                .thenReturn(new MessageResponse(1L, 1L, 2L, "Hello", null, "/media/image.png", "image", null));
 
         MockMultipartFile file = new MockMultipartFile("mediaFile", "image.png", MediaType.IMAGE_PNG_VALUE, "dummy".getBytes());
 
@@ -48,6 +48,24 @@ public class MessageControllerTest {
                 .param("receiverId", "2")
                 .param("content", "Hello")
                 .param("mediaType", "image")
+                .with(SecurityMockMvcRequestPostProcessors.user("user").roles("USER"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void testSendVoiceMessage_Success() throws Exception {
+        Mockito.when(messageService.sendMessage(any(), any(MessageRequest.class)))
+                .thenReturn(new MessageResponse(1L, 1L, 2L, null, null, "/media/voice.ogg", "audio", 5));
+
+        MockMultipartFile file = new MockMultipartFile("mediaFile", "voice.ogg", "audio/ogg", "dummy".getBytes());
+
+        mockMvc.perform(multipart("/api/messages")
+                .file(file)
+                .param("receiverId", "2")
+                .param("mediaType", "audio")
+                .param("audioDuration", "5")
                 .with(SecurityMockMvcRequestPostProcessors.user("user").roles("USER"))
                 .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
