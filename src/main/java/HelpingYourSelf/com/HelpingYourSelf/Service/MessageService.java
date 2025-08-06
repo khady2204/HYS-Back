@@ -23,7 +23,6 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final MessageRepository messageRepo;
 
     public MessageResponse sendMessage(User sender, MessageRequest request) {
         User senderEntity = userRepository.findById(sender.getId())
@@ -115,18 +114,20 @@ public class MessageService {
     }
 
     public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
-        List<Message> all = messageRepo.findBySenderOrReceiver(currentUser, currentUser);
+        List<Message> all = messageRepository.findBySenderIdOrReceiverId(currentUser.getId(), currentUser.getId());
 
-        Map<User, List<Message>> grouped = new HashMap<>();
+        Map<Long, List<Message>> grouped = new HashMap<>();
+        Map<Long, User> userMap = new HashMap<>();
 
         for (Message m : all) {
             // Les entités User peuvent être différentes instances représentant le même utilisateur.
-            // Comparer directement les objets peut donc échouer. On compare les identifiants
-            // pour déterminer si le message a été envoyé par l'utilisateur courant.
+            // On compare donc les identifiants pour déterminer si le message a été envoyé par l'utilisateur courant.
             User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
                     ? m.getReceiver()
                     : m.getSender();
-            grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
+            Long amiId = ami.getId();
+            grouped.computeIfAbsent(amiId, k -> new ArrayList<>()).add(m);
+            userMap.putIfAbsent(amiId, ami);
         }
 
         // Trier les messages de chaque conversation
@@ -142,7 +143,7 @@ public class MessageService {
                     return last2.compareTo(last1);
                 })
                 .collect(LinkedHashMap::new,
-                        (map, entry) -> map.put(entry.getKey(), entry.getValue()),
+                        (map, entry) -> map.put(userMap.get(entry.getKey()), entry.getValue()),
                         Map::putAll);
     }
 
