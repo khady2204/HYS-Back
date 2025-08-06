@@ -13,10 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class MessageServiceTest {
@@ -69,5 +72,25 @@ public class MessageServiceTest {
         User key = grouped.keySet().iterator().next();
         assertEquals(2L, key.getId());
         assertEquals(2, grouped.get(key).size());
+    }
+
+    @Test
+    void markMessageAsRead_setsReadFlag() {
+        User receiver = new User();
+        receiver.setId(1L);
+        User sender = new User();
+        sender.setId(2L);
+
+        Message message = new Message();
+        message.setId(10L);
+        message.setSender(sender);
+        message.setReceiver(receiver);
+
+        when(messageRepository.findById(10L)).thenReturn(Optional.of(message));
+
+        messageService.markMessageAsRead(10L, receiver);
+
+        assertTrue(message.isRead());
+        verify(messageRepository).save(message);
     }
 }
