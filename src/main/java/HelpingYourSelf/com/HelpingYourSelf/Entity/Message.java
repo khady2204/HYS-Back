@@ -38,6 +38,9 @@ public class Message {
     @Column(name = "audio_duration")
     private Integer audioDuration;
 
+    @Column(name = "is_read", nullable = false)
+    private boolean read = false;
+
     public Message() {
         this.timestamp = Instant.now();
     }
@@ -106,5 +109,13 @@ public class Message {
 
     public void setAudioDuration(Integer audioDuration) {
         this.audioDuration = audioDuration;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }
