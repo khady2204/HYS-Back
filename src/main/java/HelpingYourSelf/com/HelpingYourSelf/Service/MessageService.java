@@ -37,6 +37,7 @@ public class MessageService {
         message.setReceiver(receiver);
         message.setContent(request.getContent());
         message.setTimestamp(Instant.now());
+        message.setAudioDuration(request.getAudioDuration());
 
         if (request.getMediaFile() != null && !request.getMediaFile().isEmpty()) {
             try {
@@ -71,7 +72,9 @@ public class MessageService {
                 savedMessage.getContent(),
                 savedMessage.getTimestamp(),
                 savedMessage.getMediaUrl(),
-                savedMessage.getMediaType()
+                savedMessage.getMediaType(),
+                savedMessage.getAudioDuration(),
+                savedMessage.isRead()
         );
     }
 
@@ -93,9 +96,23 @@ public class MessageService {
                         m.getContent(),
                         m.getTimestamp(),
                         m.getMediaUrl(),
-                        m.getMediaType()
+                        m.getMediaType(),
+                        m.getAudioDuration(),
+                        m.isRead()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public void markMessageAsRead(Long messageId, User currentUser) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+
+        if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
+            throw new RuntimeException("Not authorized to mark this message as read");
+        }
+
+        message.setRead(true);
+        messageRepository.save(message);
     }
 
     public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {

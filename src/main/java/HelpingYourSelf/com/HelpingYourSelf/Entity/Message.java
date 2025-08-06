@@ -2,8 +2,6 @@ package HelpingYourSelf.com.HelpingYourSelf.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
 
@@ -36,6 +34,12 @@ public class Message {
 
     @Column(name = "media_type", length = 50)
     private String mediaType;
+
+    @Column(name = "audio_duration")
+    private Integer audioDuration;
+
+    @Column(name = "is_read", nullable = false)
+    private boolean read = false;
 
     public Message() {
         this.timestamp = Instant.now();
@@ -97,5 +101,21 @@ public class Message {
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public Integer getAudioDuration() {
+        return audioDuration;
+    }
+
+    public void setAudioDuration(Integer audioDuration) {
+        this.audioDuration = audioDuration;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

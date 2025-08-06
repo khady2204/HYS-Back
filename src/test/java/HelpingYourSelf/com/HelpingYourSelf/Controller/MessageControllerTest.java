@@ -39,7 +39,7 @@ public class MessageControllerTest {
     @WithMockUser(username = "user", roles = {"USER"})
     public void testSendMessage_Success() throws Exception {
         Mockito.when(messageService.sendMessage(any(), any(MessageRequest.class)))
-                .thenReturn(new MessageResponse(1L, 1L, 2L, "Hello", null, "/media/image.png", "image"));
+                .thenReturn(new MessageResponse(1L, 1L, 2L, "Hello", null, "/media/image.png", "image", null, false));
 
         MockMultipartFile file = new MockMultipartFile("mediaFile", "image.png", MediaType.IMAGE_PNG_VALUE, "dummy".getBytes());
 
@@ -48,6 +48,24 @@ public class MessageControllerTest {
                 .param("receiverId", "2")
                 .param("content", "Hello")
                 .param("mediaType", "image")
+                .with(SecurityMockMvcRequestPostProcessors.user("user").roles("USER"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void testSendVoiceMessage_Success() throws Exception {
+        Mockito.when(messageService.sendMessage(any(), any(MessageRequest.class)))
+                .thenReturn(new MessageResponse(1L, 1L, 2L, null, null, "/media/voice.ogg", "audio", 5, false));
+
+        MockMultipartFile file = new MockMultipartFile("mediaFile", "voice.ogg", "audio/ogg", "dummy".getBytes());
+
+        mockMvc.perform(multipart("/api/messages")
+                .file(file)
+                .param("receiverId", "2")
+                .param("mediaType", "audio")
+                .param("audioDuration", "5")
                 .with(SecurityMockMvcRequestPostProcessors.user("user").roles("USER"))
                 .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
@@ -83,5 +101,23 @@ public class MessageControllerTest {
         mockMvc.perform(get("/api/messages/2")
                 .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isFound()); // 302 redirect to login page
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    public void testMarkAsRead_Success() throws Exception {
+        Mockito.doNothing().when(messageService).markMessageAsRead(anyLong(), any());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/messages/1/read")
+                        .with(SecurityMockMvcRequestPostProcessors.user("user").roles("USER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testMarkAsRead_Unauthorized() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/messages/1/read")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isFound());
     }
 }
