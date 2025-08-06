@@ -73,7 +73,8 @@ public class MessageService {
                 savedMessage.getTimestamp(),
                 savedMessage.getMediaUrl(),
                 savedMessage.getMediaType(),
-                savedMessage.getAudioDuration()
+                savedMessage.getAudioDuration(),
+                savedMessage.isRead()
         );
     }
 
@@ -96,9 +97,22 @@ public class MessageService {
                         m.getTimestamp(),
                         m.getMediaUrl(),
                         m.getMediaType(),
-                        m.getAudioDuration()
+                        m.getAudioDuration(),
+                        m.isRead()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public void markMessageAsRead(Long messageId, User currentUser) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+
+        if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
+            throw new RuntimeException("Not authorized to mark this message as read");
+        }
+
+        message.setRead(true);
+        messageRepository.save(message);
     }
 
     public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
