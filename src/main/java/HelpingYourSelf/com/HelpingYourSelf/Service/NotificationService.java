@@ -20,9 +20,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepo;
     private final SimpMessagingTemplate messagingTemplate;
 
-    /**
-     * Envoie une notification en base de données et envoie en temps réel via WebSocket.
-     */
+    
     public Notification envoyerNotification(Notification notification) {
         notification.setDateEnvoi(Instant.now());
         Notification saved = notificationRepo.save(notification);

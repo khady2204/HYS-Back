@@ -2,21 +2,32 @@ package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.PublicUserDTO;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UpdateProfileRequest;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.UpdateProfileResponse;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.UserSummary;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Interet;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.InteretRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
+import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
@@ -25,9 +36,7 @@ public class UserController {
 
     private final UserRepository userRepo;
     private final InteretRepository interetRepository;
-
-
-
+    private final JwtTokenProvider jwtTokenProvider;
 
     //  Liste des utilisateurs
     @GetMapping("/list")
@@ -62,7 +71,6 @@ public class UserController {
 
         return ResponseEntity.status(403).body("Accès refusé");
     }
-
 
 
 
@@ -105,32 +113,77 @@ public class UserController {
         return ResponseEntity.ok(onlineUsers);
     }
 
+
     @PutMapping("/update-profile")
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN', 'ROLE_GESTIONNAIRE')")
     public ResponseEntity<?> updateProfile(
             @AuthenticationPrincipal(expression = "user") User currentUser,
-            @RequestBody UpdateProfileRequest request
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String prenom,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String bio,
+            @RequestParam(required = false) String adresse,
+            @RequestParam(required = false) MultipartFile profileImage,
+            @RequestParam(required = false) List<Long> interetIds
     ) {
         if (currentUser == null) {
             return ResponseEntity.status(401).body("Non authentifié");
         }
 
-        currentUser.setNom(request.getNom());
-        currentUser.setPrenom(request.getPrenom());
-        currentUser.setEmail(request.getEmail());
-        currentUser.setPhone(request.getPhone());
-        currentUser.setAdresse(request.getAdresse());
-        currentUser.setBio(request.getBio());
-        currentUser.setProfileImage(request.getProfileImage());
+        if (prenom != null) currentUser.setPrenom(prenom);
+        if (nom != null) currentUser.setNom(nom);
+        if (email != null) currentUser.setEmail(email);
+        if (phone != null) currentUser.setPhone(phone);
+        if (adresse != null) currentUser.setAdresse(adresse);
+        if (bio != null) currentUser.setBio(bio);
 
-        if (request.getInteretIds() != null && !request.getInteretIds().isEmpty()) {
-            List<Interet> interets = interetRepository.findAllById(request.getInteretIds());
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String imageUrl = saveProfileImage(profileImage);
+            currentUser.setProfileImage(imageUrl);
+        }
+
+        if (interetIds != null && !interetIds.isEmpty()) {
+            List<Interet> interets = interetRepository.findAllById(interetIds);
             currentUser.setInterets(interets);
         }
 
         userRepo.save(currentUser);
-        return ResponseEntity.ok("Profil mis à jour avec succès");
+
+
+        String newToken = jwtTokenProvider.generateTokenFromUser(currentUser);
+
+        UserSummary summary = new UserSummary(
+                currentUser.getId(),
+                currentUser.getNom(),
+                currentUser.getPrenom(),
+                currentUser.getEmail(),
+                currentUser.getPhone(),
+                currentUser.getAdresse(),
+                currentUser.getBio(),
+                currentUser.getProfileImage()
+        );
+
+        return ResponseEntity.ok(new UpdateProfileResponse(newToken, summary));
     }
+
+
+
+
+    private String saveProfileImage(MultipartFile file) {
+        try {
+            String uploadDir = "uploads/profiles/";
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, filename);
+            Files.createDirectories(filePath.getParent());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Chemin accessible côté front
+            return "/uploads/profiles/" + filename;
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'upload de la photo", e);
+        }
+    }
+
 
 
     @PostMapping("/{id}/follow")

@@ -72,10 +72,13 @@ public class MessageController {
                 .map(entry -> new DiscussionResponse(
                         new UserSummary(
                                 entry.getKey().getId(),
-                                entry.getKey().getPrenom(),
                                 entry.getKey().getNom(),
-                                entry.getKey().getProfileImage(),
-                                entry.getKey().getPhone()
+                                entry.getKey().getPrenom(),
+                                entry.getKey().getEmail(),
+                                entry.getKey().getPhone(),
+                                entry.getKey().getAdresse(),
+                                entry.getKey().getBio(),
+                                entry.getKey().getProfileImage()
                         ),
                         entry.getValue()
                 ))
@@ -83,6 +86,7 @@ public class MessageController {
 
         return ResponseEntity.ok(discussions);
     }
+
 
     @GetMapping("/discussions/search")
     public ResponseEntity<?> searchDiscussion(

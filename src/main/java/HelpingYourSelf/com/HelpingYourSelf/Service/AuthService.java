@@ -225,7 +225,6 @@ public class AuthService {
         userRepo.save(user);
     }
 
-    // ✅ Authentification Google et stockage du token
     public String processGoogleToken(String idTokenString) throws Exception {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
