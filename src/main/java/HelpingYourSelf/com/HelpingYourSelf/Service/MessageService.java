@@ -105,20 +105,6 @@ public class MessageService {
     public void markMessageAsRead(Long messageId, User currentUser) {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
-<<<<<<< HEAD
-=======
-
-        if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
-            throw new RuntimeException("Not authorized to mark this message as read");
-        }
-
-        message.setRead(true);
-        messageRepository.save(message);
-    }
-
-    public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
-        List<Message> all = messageRepo.findBySenderOrReceiver(currentUser, currentUser);
->>>>>>> khady/makha
 
         if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
             throw new RuntimeException("Not authorized to mark this message as read");
@@ -136,7 +122,6 @@ public class MessageService {
 
         for (Message m : all) {
             // Les entités User peuvent être différentes instances représentant le même utilisateur.
-<<<<<<< HEAD
             // On compare donc les identifiants pour déterminer si le message a été envoyé par l'utilisateur courant.
             User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
                     ? m.getReceiver()
@@ -144,14 +129,6 @@ public class MessageService {
             Long amiId = ami.getId();
             grouped.computeIfAbsent(amiId, k -> new ArrayList<>()).add(m);
             userMap.putIfAbsent(amiId, ami);
-=======
-            // Comparer directement les objets peut donc échouer. On compare les identifiants
-            // pour déterminer si le message a été envoyé par l'utilisateur courant.
-            User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
-                    ? m.getReceiver()
-                    : m.getSender();
-            grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
->>>>>>> khady/makha
         }
 
         // Trier les messages de chaque conversation
@@ -179,8 +156,8 @@ public class MessageService {
 
         User otherUser = optionalOtherUser.get();
 
-        return messageRepo.findBySenderAndReceiverOrReceiverAndSender(
-                currentUser, otherUser, currentUser, otherUser
+        return messageRepository.findBySenderAndReceiverOrReceiverAndSender(
+                currentUser, otherUser, otherUser, currentUser
         );
     }
 
