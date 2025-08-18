@@ -88,6 +88,18 @@ public class MessageController {
         if (currentUserDetails == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
+<<<<<<< HEAD
+
+        try {
+            messageService.markMessageAsRead(messageId, currentUserDetails.getUser());
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+=======
+>>>>>>> khady/makha
 
         try {
             messageService.markMessageAsRead(messageId, currentUserDetails.getUser());

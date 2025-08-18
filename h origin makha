@@ -1,0 +1,1640 @@
+[1mdiff --git a/pom.xml b/pom.xml[m
+[1mindex 434ff1d..7221f0f 100644[m
+[1m--- a/pom.xml[m
+[1m+++ b/pom.xml[m
+[36m@@ -1,198 +1,198 @@[m
+ <?xml version="1.0" encoding="UTF-8"?>[m
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"[m
+[31m-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">[m
+[31m-    <modelVersion>4.0.0</modelVersion>[m
+[31m-    <parent>[m
+[31m-        <groupId>org.springframework.boot</groupId>[m
+[31m-        <artifactId>spring-boot-starter-parent</artifactId>[m
+[31m-        <version>3.5.0</version>[m
+[31m-        <relativePath/> <!-- lookup parent from repository -->[m
+[31m-    </parent>[m
+[31m-    <groupId>HelpingYourSelf.com</groupId>[m
+[31m-    <artifactId>HelpingYourSelf</artifactId>[m
+[31m-    <version>0.0.1-SNAPSHOT</version>[m
+[31m-    <name>HelpingYourSelf</name>[m
+[31m-    <description>HelpingYourelf project for Spring Boot</description>[m
+[31m-    <url/>[m
+[31m-    <licenses>[m
+[31m-        <license/>[m
+[31m-    </licenses>[m
+[31m-    <developers>[m
+[31m-        <developer/>[m
+[31m-    </developers>[m
+[31m-    <scm>[m
+[31m-        <connection/>[m
+[31m-        <developerConnection/>[m
+[31m-        <tag/>[m
+[31m-        <url/>[m
+[31m-    </scm>[m
+[31m-    <properties>[m
+[31m-        <java.version>17</java.version>[m
+[31m-    </properties>[m
+[31m-    <dependencies>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-data-jpa</artifactId>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-security</artifactId>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-web</artifactId>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-devtools</artifactId>[m
+[31m-            <scope>runtime</scope>[m
+[31m-            <optional>true</optional>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>com.h2database</groupId>[m
+[31m-            <artifactId>h2</artifactId>[m
+[31m-            <scope>runtime</scope>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.projectlombok</groupId>[m
+[31m-            <artifactId>lombok</artifactId>[m
+[31m-            <optional>true</optional>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-test</artifactId>[m
+[31m-            <scope>test</scope>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.security</groupId>[m
+[31m-            <artifactId>spring-security-test</artifactId>[m
+[31m-            <scope>test</scope>[m
+[31m-        </dependency>[m
+[31m-        <!-- Sécurité & JWT -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-security</artifactId>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-[m
+[31m-        <!-- Validation -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>jakarta.validation</groupId>[m
+[31m-            <artifactId>jakarta.validation-api</artifactId>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <!-- Twilio pour SMS -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>com.twilio.sdk</groupId>[m
+[31m-            <artifactId>twilio</artifactId>[m
+[31m-            <version>9.3.0</version>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <!-- Lombok & JPA -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.projectlombok</groupId>[m
+[31m-            <artifactId>lombok</artifactId>[m
+[31m-            <optional>true</optional>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-data-jpa</artifactId>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <!-- Swagger/OpenAPI -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springdoc</groupId>[m
+[31m-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>[m
+[31m-            <version>2.5.0</version>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>mysql</groupId>[m
+[31m-            <artifactId>mysql-connector-java</artifactId>[m
+[31m-            <version>8.0.32</version>[m
+[31m-            <scope>runtime</scope>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <dependency>[m
+[31m-            <groupId>io.jsonwebtoken</groupId>[m
+[31m-            <artifactId>jjwt-api</artifactId>[m
+[31m-            <version>0.11.5</version>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>io.jsonwebtoken</groupId>[m
+[31m-            <artifactId>jjwt-impl</artifactId>[m
+[31m-            <version>0.11.5</version>[m
+[31m-            <scope>runtime</scope>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>io.jsonwebtoken</groupId>[m
+[31m-            <artifactId>jjwt-jackson</artifactId>[m
+[31m-            <version>0.11.5</version>[m
+[31m-            <scope>runtime</scope>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-oauth2-client</artifactId>[m
+[31m-        </dependency>[m
+[31m-        <dependency>[m
+[31m-            <groupId>org.springframework.boot</groupId>[m
+[31m-            <artifactId>spring-boot-starter-security</artifactId>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <!-- Google API Client -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>com.google.api-client</groupId>[m
+[31m-            <artifactId>google-api-client</artifactId>[m
+[31m-            <version>2.2.0</version>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <!-- Google OAuth Client -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>com.google.oauth-client</groupId>[m
+[31m-            <artifactId>google-oauth-client</artifactId>[m
+[31m-            <version>1.34.1</version>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-        <!-- HTTP client + Jackson2 for JSON -->[m
+[31m-        <dependency>[m
+[31m-            <groupId>com.google.http-client</groupId>[m
+[31m-            <artifactId>google-http-client-jackson2</artifactId>[m
+[31m-            <version>1.43.3</version>[m
+[31m-        </dependency>[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    </dependencies>[m
+[31m-[m
+[31m-    <build>[m
+[31m-        <plugins>[m
+[31m-            <plugin>[m
+[31m-                <groupId>org.apache.maven.plugins</groupId>[m
+[31m-                <artifactId>maven-compiler-plugin</artifactId>[m
+[31m-                <configuration>[m
+[31m-                    <annotationProcessorPaths>[m
+[31m-                        <path>[m
+[31m-                            <groupId>org.projectlombok</groupId>[m
+[31m-                            <artifactId>lombok</artifactId>[m
+[31m-                        </path>[m
+[31m-                    </annotationProcessorPaths>[m
+[31m-                </configuration>[m
+[31m-            </plugin>[m
+[31m-            <plugin>[m
+[31m-                <groupId>org.springframework.boot</groupId>[m
+[31m-                <artifactId>spring-boot-maven-plugin</artifactId>[m
+[31m-                <configuration>[m
+[31m-                    <excludes>[m
+[31m-                        <exclude>[m
+[31m-                            <groupId>org.projectlombok</groupId>[m
+[31m-                            <artifactId>lombok</artifactId>[m
+[31m-                        </exclude>[m
+[31m-                    </excludes>[m
+[31m-                </configuration>[m
+[31m-            </plugin>[m
+[31m-        </plugins>[m
+[31m-    </build>[m
+[32m+[m	[32mxsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">[m
+[32m+[m	[32m<modelVersion>4.0.0</modelVersion>[m
+[32m+[m	[32m<parent>[m
+[32m+[m		[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m		[32m<artifactId>spring-boot-starter-parent</artifactId>[m
+[32m+[m		[32m<version>3.5.0</version>[m
+[32m+[m		[32m<relativePath/> <!-- lookup parent from repository -->[m
+[32m+[m	[32m</parent>[m
+[32m+[m	[32m<groupId>HelpingYourSelf.com</groupId>[m
+[32m+[m	[32m<artifactId>HelpingYourSelf</artifactId>[m
+[32m+[m	[32m<version>0.0.1-SNAPSHOT</version>[m
+[32m+[m	[32m<name>HelpingYourSelf</name>[m
+[32m+[m	[32m<description>HelpingYourelf project for Spring Boot</description>[m
+[32m+[m	[32m<url/>[m
+[32m+[m	[32m<licenses>[m
+[32m+[m		[32m<license/>[m
+[32m+[m	[32m</licenses>[m
+[32m+[m	[32m<developers>[m
+[32m+[m		[32m<developer/>[m
+[32m+[m	[32m</developers>[m
+[32m+[m	[32m<scm>[m
+[32m+[m		[32m<connection/>[m
+[32m+[m		[32m<developerConnection/>[m
+[32m+[m		[32m<tag/>[m
+[32m+[m		[32m<url/>[m
+[32m+[m	[32m</scm>[m
+[32m+[m	[32m<properties>[m
+[32m+[m		[32m<java.version>17</java.version>[m
+[32m+[m	[32m</properties>[m
+[32m+[m	[32m<dependencies>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-data-jpa</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-security</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-web</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-devtools</artifactId>[m
+[32m+[m			[32m<scope>runtime</scope>[m
+[32m+[m			[32m<optional>true</optional>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>com.h2database</groupId>[m
+[32m+[m			[32m<artifactId>h2</artifactId>[m
+[32m+[m			[32m<scope>runtime</scope>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.projectlombok</groupId>[m
+[32m+[m			[32m<artifactId>lombok</artifactId>[m
+[32m+[m			[32m<optional>true</optional>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-test</artifactId>[m
+[32m+[m			[32m<scope>test</scope>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.security</groupId>[m
+[32m+[m			[32m<artifactId>spring-security-test</artifactId>[m
+[32m+[m			[32m<scope>test</scope>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<!-- Sécurité & JWT -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-security</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m
+[32m+[m		[32m<!-- Validation -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>jakarta.validation</groupId>[m
+[32m+[m			[32m<artifactId>jakarta.validation-api</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<!-- Twilio pour SMS -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>com.twilio.sdk</groupId>[m
+[32m+[m			[32m<artifactId>twilio</artifactId>[m
+[32m+[m			[32m<version>9.3.0</version>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<!-- Lombok & JPA -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.projectlombok</groupId>[m
+[32m+[m			[32m<artifactId>lombok</artifactId>[m
+[32m+[m			[32m<optional>true</optional>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-data-jpa</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<!-- Swagger/OpenAPI -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springdoc</groupId>[m
+[32m+[m			[32m<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>[m
+[32m+[m			[32m<version>2.5.0</version>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>mysql</groupId>[m
+[32m+[m			[32m<artifactId>mysql-connector-java</artifactId>[m
+[32m+[m			[32m<version>8.0.32</version>[m
+[32m+[m			[32m<scope>runtime</scope>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>io.jsonwebtoken</groupId>[m
+[32m+[m			[32m<artifactId>jjwt-api</artifactId>[m
+[32m+[m			[32m<version>0.11.5</version>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>io.jsonwebtoken</groupId>[m
+[32m+[m			[32m<artifactId>jjwt-impl</artifactId>[m
+[32m+[m			[32m<version>0.11.5</version>[m
+[32m+[m			[32m<scope>runtime</scope>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>io.jsonwebtoken</groupId>[m
+[32m+[m			[32m<artifactId>jjwt-jackson</artifactId>[m
+[32m+[m			[32m<version>0.11.5</version>[m
+[32m+[m			[32m<scope>runtime</scope>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-oauth2-client</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m			[32m<artifactId>spring-boot-starter-security</artifactId>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<!-- Google API Client -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>com.google.api-client</groupId>[m
+[32m+[m			[32m<artifactId>google-api-client</artifactId>[m
+[32m+[m			[32m<version>2.2.0</version>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<!-- Google OAuth Client -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>com.google.oauth-client</groupId>[m
+[32m+[m			[32m<artifactId>google-oauth-client</artifactId>[m
+[32m+[m			[32m<version>1.34.1</version>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m		[32m<!-- HTTP client + Jackson2 for JSON -->[m
+[32m+[m		[32m<dependency>[m
+[32m+[m			[32m<groupId>com.google.http-client</groupId>[m
+[32m+[m			[32m<artifactId>google-http-client-jackson2</artifactId>[m
+[32m+[m			[32m<version>1.43.3</version>[m
+[32m+[m		[32m</dependency>[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m	[32m</dependencies>[m
+[32m+[m
+[32m+[m	[32m<build>[m
+[32m+[m		[32m<plugins>[m
+[32m+[m			[32m<plugin>[m
+[32m+[m				[32m<groupId>org.apache.maven.plugins</groupId>[m
+[32m+[m				[32m<artifactId>maven-compiler-plugin</artifactId>[m
+[32m+[m				[32m<configuration>[m
+[32m+[m					[32m<annotationProcessorPaths>[m
+[32m+[m						[32m<path>[m
+[32m+[m							[32m<groupId>org.projectlombok</groupId>[m
+[32m+[m							[32m<artifactId>lombok</artifactId>[m
+[32m+[m						[32m</path>[m
+[32m+[m					[32m</annotationProcessorPaths>[m
+[32m+[m				[32m</configuration>[m
+[32m+[m			[32m</plugin>[m
+[32m+[m			[32m<plugin>[m
+[32m+[m				[32m<groupId>org.springframework.boot</groupId>[m
+[32m+[m				[32m<artifactId>spring-boot-maven-plugin</artifactId>[m
+[32m+[m				[32m<configuration>[m
+[32m+[m					[32m<excludes>[m
+[32m+[m						[32m<exclude>[m
+[32m+[m							[32m<groupId>org.projectlombok</groupId>[m
+[32m+[m							[32m<artifactId>lombok</artifactId>[m
+[32m+[m						[32m</exclude>[m
+[32m+[m					[32m</excludes>[m
+[32m+[m				[32m</configuration>[m
+[32m+[m			[32m</plugin>[m
+[32m+[m		[32m</plugins>[m
+[32m+[m	[32m</build>[m
+ [m
+ </project>[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/CommentaireController.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/CommentaireController.java[m
+[1mdeleted file mode 100644[m
+[1mindex bde1e49..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/CommentaireController.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,38 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Controller;[m
+[31m-[m
+[31m-[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.User;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Service.CommentaireService;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.security.core.annotation.AuthenticationPrincipal;[m
+[31m-import org.springframework.web.bind.annotation.*;[m
+[31m-[m
+[31m-@RestController[m
+[31m-@RequestMapping("/commentaires")[m
+[31m-public class CommentaireController {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private CommentaireService commentaireService;[m
+[31m-[m
+[31m-    @PostMapping("/{publicationId}/ajouter")[m
+[31m-    public ResponseEntity<?> commenter(@AuthenticationPrincipal(expression = "user") User user,[m
+[31m-                                       @PathVariable Long publicationId,[m
+[31m-                                       @RequestParam String contenu,[m
+[31m-                                       @RequestParam(required = false) Long parentId) {[m
+[31m-        return ResponseEntity.ok(commentaireService.commenter(user, publicationId, contenu, parentId));[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    @PostMapping("/{id}/like")[m
+[31m-    public ResponseEntity<?> like(@AuthenticationPrincipal(expression = "user") User user, @PathVariable Long id) {[m
+[31m-        return ResponseEntity.ok(commentaireService.toggleLike(user, id));[m
+[31m-    }[m
+[31m-[m
+[31m-    @DeleteMapping("/{id}/supprimer")[m
+[31m-    public ResponseEntity<?> deleteCom(@PathVariable Long id, @AuthenticationPrincipal(expression = "user") User user) {[m
+[31m-        return ResponseEntity.ok(commentaireService.supprimerCommentaire(id, user));[m
+[31m-    }[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/ManagerController.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/ManagerController.java[m
+[1mindex c4ab051..1faf21b 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/ManagerController.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/ManagerController.java[m
+[36m@@ -3,14 +3,11 @@[m [mpackage HelpingYourSelf.com.HelpingYourSelf.Controller;[m
+ import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;[m
+ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;[m
+ import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;[m
+[31m-import com.twilio.rest.api.v2010.account.Message;[m
+ import lombok.RequiredArgsConstructor;[m
+ import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.security.core.annotation.AuthenticationPrincipal;[m
+ import org.springframework.web.bind.annotation.*;[m
+ [m
+ import java.util.List;[m
+[31m-import java.util.Optional;[m
+ [m
+ @RestController[m
+ @RequestMapping("/api/gestion")[m
+[36m@@ -39,9 +36,5 @@[m [mpublic class ManagerController {[m
+         userRepo.save(u);[m
+         return ResponseEntity.ok("Compte débloqué");[m
+     }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+ }[m
+ [m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/MessageController.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/MessageController.java[m
+[1mindex 58b984b..6ebb60d 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/MessageController.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/MessageController.java[m
+[36m@@ -98,4 +98,4 @@[m [mpublic class MessageController {[m
+     }[m
+ [m
+ [m
+[31m-}[m
+\ No newline at end of file[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/PublicationController.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/PublicationController.java[m
+[1mdeleted file mode 100644[m
+[1mindex 637ce1c..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Controller/PublicationController.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,66 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Controller;[m
+[31m-[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Service.PublicationService;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.User;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.data.domain.PageRequest;[m
+[31m-import org.springframework.http.ResponseEntity;[m
+[31m-import org.springframework.security.core.annotation.AuthenticationPrincipal;[m
+[31m-import org.springframework.web.bind.annotation.*;[m
+[31m-import org.springframework.web.multipart.MultipartFile;[m
+[31m-[m
+[31m-import org.springframework.data.domain.Page;[m
+[31m-import org.springframework.data.domain.Pageable;[m
+[31m-[m
+[31m-[m
+[31m-@RestController[m
+[31m-@RequestMapping("/publications")[m
+[31m-public class PublicationController {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private PublicationService publicationService;[m
+[31m-[m
+[31m-    @PostMapping("/poster")[m
+[31m-    public ResponseEntity<?> poster([m
+[31m-            @AuthenticationPrincipal(expression = "user") User user,[m
+[31m-            @RequestParam String texte,[m
+[31m-            @RequestParam(required = false) MultipartFile media) {[m
+[31m-        return ResponseEntity.ok(publicationService.poster(user, texte, media));[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping[m
+[31m-    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page) {[m
+[31m-        return ResponseEntity.ok(publicationService.getPublications((Pageable) PageRequest.of(page, 5)));[m
+[31m-    }[m
+[31m-[m
+[31m-    @PostMapping("/{id}/like")[m
+[31m-    public ResponseEntity<?> like(@AuthenticationPrincipal(expression = "user") User user, @PathVariable Long id) {[m
+[31m-        return ResponseEntity.ok(publicationService.toggleLike(user, id));[m
+[31m-    }[m
+[31m-[m
+[31m-    @PostMapping("/{id}/partager")[m
+[31m-    public ResponseEntity<?> partager(@PathVariable Long id) {[m
+[31m-        return ResponseEntity.ok(publicationService.incrementerPartage(id));[m
+[31m-    }[m
+[31m-[m
+[31m-    @GetMapping("/{id}/commentaires")[m
+[31m-    public ResponseEntity<?> getCommentaires(@PathVariable Long id) {[m
+[31m-        return ResponseEntity.ok(publicationService.getCommentaires(id));[m
+[31m-    }[m
+[31m-[m
+[31m-    @DeleteMapping("/{id}/supprimer")[m
+[31m-    public ResponseEntity<?> deletePub(@PathVariable Long id, @AuthenticationPrincipal(expression = "user") User user) {[m
+[31m-        return ResponseEntity.ok(publicationService.supprimerPublication(id, user));[m
+[31m-    }[m
+[31m-[m
+[31m-    @PutMapping("/{id}/update-texte")[m
+[31m-    public ResponseEntity<?> modifierTextePublication([m
+[31m-            @PathVariable Long id,[m
+[31m-            @RequestParam String nouveauTexte,[m
+[31m-            @AuthenticationPrincipal(expression = "user") User user) {[m
+[31m-        return ResponseEntity.ok(publicationService.updateTexte(id, nouveauTexte, user));[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/DTO/CommentaireDTO.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/DTO/CommentaireDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex 97cd52f..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/DTO/CommentaireDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,19 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.DTO;[m
+[31m-[m
+[31m-import lombok.AllArgsConstructor;[m
+[31m-import lombok.Data;[m
+[31m-[m
+[31m-import java.time.Instant;[m
+[31m-import java.util.List;[m
+[31m-[m
+[31m-@Data[m
+[31m-@AllArgsConstructor[m
+[31m-public class CommentaireDTO {[m
+[31m-    private Long id;[m
+[31m-    private String contenu;[m
+[31m-    private String auteur;[m
+[31m-    private Instant createdAt;[m
+[31m-    private int nombreLikes;[m
+[31m-    private List<CommentaireDTO> reponses;[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/DTO/PublicationDTO.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/DTO/PublicationDTO.java[m
+[1mdeleted file mode 100644[m
+[1mindex 6498203..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/DTO/PublicationDTO.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,21 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.DTO;[m
+[31m-[m
+[31m-import lombok.AllArgsConstructor;[m
+[31m-import lombok.Data;[m
+[31m-[m
+[31m-import java.time.Instant;[m
+[31m-[m
+[31m-@Data[m
+[31m-@AllArgsConstructor[m
+[31m-public class PublicationDTO {[m
+[31m-    private Long id;[m
+[31m-    private String texte;[m
+[31m-    private String mediaUrl;[m
+[31m-    private String mediaType;[m
+[31m-    private String auteurNom;[m
+[31m-    private Instant createdAt;[m
+[31m-    private int nombreCommentaires;[m
+[31m-    private int nombreLikes;[m
+[31m-    private int nombrePartages;[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Commentaire.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Commentaire.java[m
+[1mdeleted file mode 100644[m
+[1mindex d67a000..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Commentaire.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,50 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Entity;[m
+[31m-[m
+[31m-import jakarta.persistence.*;[m
+[31m-import lombok.*;[m
+[31m-import jakarta.persistence.Id;[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-import java.time.Instant;[m
+[31m-import java.util.ArrayList;[m
+[31m-import java.util.HashSet;[m
+[31m-import java.util.List;[m
+[31m-import java.util.Set;[m
+[31m-[m
+[31m-@Entity[m
+[31m-[m
+[31m-@Getter[m
+[31m-@Setter[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class Commentaire {[m
+[31m-[m
+[31m-    @Id[m
+[31m-    @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private Long id;[m
+[31m-[m
+[31m-    private String contenu;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    private User auteur;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    private Publication publication;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    private Commentaire parent;[m
+[31m-[m
+[31m-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)[m
+[31m-    private List<Commentaire> reponses = new ArrayList<>();[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    @ManyToMany[m
+[31m-    private Set<User> likes = new HashSet<>();[m
+[31m-[m
+[31m-    private Instant createdAt = Instant.now();[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Message.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Message.java[m
+[1mindex 066ae75..bbfaa6e 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Message.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Message.java[m
+[36m@@ -5,6 +5,15 @@[m [mimport jakarta.persistence.*;[m
+ [m
+ import java.time.Instant;[m
+ [m
+[32m+[m[32m/**[m
+[32m+[m[32m * Entity representing a message exchanged between two users.[m
+[32m+[m[32m *[m
+[32m+[m[32m * <p>[m
+[32m+[m[32m * The {@code isRead} field is mapped to the {@code is_read} column in the database. It defaults[m
+[32m+[m[32m * to {@code false} and is ensured to be {@code false} at persistence time if not explicitly set.[m
+[32m+[m[32m * </p>[m
+[32m+[m[32m */[m
+[32m+[m
+ @Entity[m
+ @Table(name = "messages")[m
+ public class Message {[m
+[36m@@ -39,7 +48,13 @@[m [mpublic class Message {[m
+     private Integer audioDuration;[m
+ [m
+     @Column(name = "is_read", nullable = false)[m
+[31m-    private boolean read = false;[m
+[32m+[m[32m    private boolean isRead = false;[m
+[32m+[m
+[32m+[m[32m    @PrePersist[m
+[32m+[m[32m    protected void prePersist() {[m
+[32m+[m[32m        // Ensure the read flag is always initialized[m
+[32m+[m[32m        this.isRead = false;[m
+[32m+[m[32m    }[m
+ [m
+     public Message() {[m
+         this.timestamp = Instant.now();[m
+[36m@@ -112,10 +127,10 @@[m [mpublic class Message {[m
+     }[m
+ [m
+     public boolean isRead() {[m
+[31m-        return read;[m
+[32m+[m[32m        return isRead;[m
+     }[m
+ [m
+     public void setRead(boolean read) {[m
+[31m-        this.read = read;[m
+[32m+[m[32m        this.isRead = read;[m
+     }[m
+ }[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Publication.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Publication.java[m
+[1mdeleted file mode 100644[m
+[1mindex 68e9a68..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Entity/Publication.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,45 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Entity;[m
+[31m-[m
+[31m-import jakarta.persistence.*;[m
+[31m-import lombok.*;[m
+[31m-import jakarta.persistence.Id;[m
+[31m-[m
+[31m-[m
+[31m-import java.time.Instant;[m
+[31m-import java.util.ArrayList;[m
+[31m-import java.util.HashSet;[m
+[31m-import java.util.List;[m
+[31m-import java.util.Set;[m
+[31m-[m
+[31m-@Entity[m
+[31m-@Getter[m
+[31m-@Setter[m
+[31m-@NoArgsConstructor[m
+[31m-@AllArgsConstructor[m
+[31m-@Builder[m
+[31m-public class Publication {[m
+[31m-[m
+[31m-    @Id[m
+[31m-    @GeneratedValue(strategy = GenerationType.IDENTITY)[m
+[31m-    private Long id;[m
+[31m-[m
+[31m-    private String texte;[m
+[31m-[m
+[31m-    private String mediaUrl;[m
+[31m-    private String mediaType;[m
+[31m-[m
+[31m-    @ManyToOne[m
+[31m-    private User auteur;[m
+[31m-[m
+[31m-    private Instant createdAt = Instant.now();[m
+[31m-[m
+[31m-    @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)[m
+[31m-    private List<Commentaire> commentaires = new ArrayList<>();[m
+[31m-[m
+[31m-    @ManyToMany[m
+[31m-    private Set<User> likes = new HashSet<>();[m
+[31m-[m
+[31m-    private int nombrePartages;[m
+[31m-}[m
+[31m-[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/HelpingYourSelfApplication.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/HelpingYourSelfApplication.java[m
+[1mindex 0fe59b0..25662c7 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/HelpingYourSelfApplication.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/HelpingYourSelfApplication.java[m
+[36m@@ -6,8 +6,7 @@[m [mimport org.springframework.boot.autoconfigure.SpringBootApplication;[m
+ @SpringBootApplication[m
+ public class HelpingYourSelfApplication {[m
+ [m
+[31m-	public static void main(String[] args) {[m
+[31m-		SpringApplication.run(HelpingYourSelfApplication.class, args);[m
+[31m-	}[m
+[31m-[m
+[32m+[m[32m    public static void main(String[] args) {[m
+[32m+[m[32m        SpringApplication.run(HelpingYourSelfApplication.class, args);[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/CommentaireRepository.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/CommentaireRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex b95bfc7..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/CommentaireRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,13 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Repository;[m
+[31m-[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.Commentaire;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-[m
+[31m-import java.util.List;[m
+[31m-[m
+[31m-public interface CommentaireRepository extends JpaRepository<Commentaire, Long> {[m
+[31m-    List<Commentaire> findByPublicationIdAndParentIsNull(Long publicationId);[m
+[31m-    List<Commentaire> findByParent(Commentaire parent);[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/MessageRepository.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/MessageRepository.java[m
+[1mindex efb12f8..84adaec 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/MessageRepository.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/MessageRepository.java[m
+[36m@@ -12,11 +12,6 @@[m [mpublic interface MessageRepository extends JpaRepository<Message, Long> {[m
+     List<Message> findBySenderOrReceiverOrderByTimestampAsc(User sender, User receiver);[m
+     List<Message> findBySenderAndReceiverOrderByTimestampAsc(User sender, User receiver);[m
+     List<Message> findBySenderOrReceiver(User sender, User receiver);[m
+[31m-[m
+[31m-[m
+[31m-    List<Message> findBySenderAndReceiverOrReceiverAndSender([m
+[31m-            User sender1, User receiver1,[m
+[31m-            User sender2, User receiver2[m
+[31m-    );[m
+[32m+[m[32m    List<Message> findBySenderIdOrReceiverId(Long senderId, Long receiverId);[m
+ [m
+ }[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/PublicationRepository.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/PublicationRepository.java[m
+[1mdeleted file mode 100644[m
+[1mindex 3a310e5..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/PublicationRepository.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,10 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Repository;[m
+[31m-[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.Publication;[m
+[31m-import org.springframework.data.domain.Page;[m
+[31m-import org.springframework.data.domain.Pageable;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-[m
+[31m-public interface PublicationRepository extends JpaRepository<Publication, Long> {[m
+[31m-    Page<Publication> findAllByOrderByCreatedAtDesc(Pageable pageable);[m
+[31m-}[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/UserRepository.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/UserRepository.java[m
+[1mindex 15e4c51..f1838f1 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/UserRepository.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Repository/UserRepository.java[m
+[36m@@ -18,8 +18,6 @@[m [mpublic interface UserRepository extends JpaRepository<User, Long> {[m
+     List<User> findByCreatedBy(User createdBy);[m
+     List<User> findByIsOnlineTrue();[m
+ [m
+[31m-[m
+     @Query("SELECT u FROM User u LEFT JOIN FETCH u.interets WHERE u.id = :id")[m
+     Optional<User> findByIdWithInterets(@Param("id") Long id);[m
+[31m-[m
+ }[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Security/JwtTokenProvider.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Security/JwtTokenProvider.java[m
+[1mindex 1e5dc0b..9286382 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Security/JwtTokenProvider.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Security/JwtTokenProvider.java[m
+[36m@@ -30,25 +30,19 @@[m [mpublic class JwtTokenProvider {[m
+     }[m
+ [m
+     public String generateToken(User user) {[m
+[32m+[m[32m        Set<String> prefixedRoles = user.getRoles().stream()[m
+[32m+[m[32m                .map(role -> "ROLE_" + role.name())[m
+[32m+[m[32m                .collect(Collectors.toSet());[m
+[32m+[m
+         return Jwts.builder()[m
+                 .setSubject(user.getPhone()) // ou .setSubject(user.getEmail()) si tu préfères[m
+[31m-                .claim("id", user.getId())[m
+[31m-                .claim("email", user.getEmail())[m
+[31m-                .claim("nom", user.getNom())[m
+[31m-                .claim("prenom", user.getPrenom())[m
+[31m-                .claim("phone", user.getPhone())[m
+[31m-                .claim("isOnline", user.getIsOnline())[m
+[31m-                .claim("profileImage", user.getProfileImage())[m
+[31m-                .claim("bio", user.getBio())[m
+[31m-                .claim("dateNaissance", user.getDatenaissance())[m
+[31m-[m
+[32m+[m[32m                .claim("roles", prefixedRoles)[m
+                 .setIssuedAt(new Date())[m
+[31m-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs)) // durée en millisecondes[m
+[32m+[m[32m                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))[m
+                 .signWith(secretKey, SignatureAlgorithm.HS512)[m
+                 .compact();[m
+     }[m
+ [m
+[31m-[m
+     @SuppressWarnings("unchecked")[m
+     public List<String> getRolesFromToken(String token) {[m
+         Claims claims = Jwts.parserBuilder()[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/CommentaireService.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/CommentaireService.java[m
+[1mdeleted file mode 100644[m
+[1mindex 87bbe1b..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/CommentaireService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,96 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Service;[m
+[31m-[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.DTO.CommentaireDTO;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.Commentaire;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.Publication;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.User;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Repository.CommentaireRepository;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Repository.PublicationRepository;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.security.access.AccessDeniedException;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-[m
+[31m-import java.time.Instant;[m
+[31m-import java.util.List;[m
+[31m-import java.util.stream.Collectors;[m
+[31m-[m
+[31m-@Service[m
+[31m-public class CommentaireService {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private PublicationRepository publicationRepo;[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private CommentaireRepository commentaireRepo;[m
+[31m-[m
+[31m-[m
+[31m-    public CommentaireDTO commenter(User user, Long publicationId, String contenu, Long parentId) {[m
+[31m-        Publication pub = publicationRepo.findById(publicationId)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Publication non trouvée"));[m
+[31m-[m
+[31m-        Commentaire commentaire = new Commentaire();[m
+[31m-        commentaire.setAuteur(user);[m
+[31m-        commentaire.setPublication(pub);[m
+[31m-        commentaire.setContenu(contenu);[m
+[31m-        commentaire.setCreatedAt(Instant.now());[m
+[31m-[m
+[31m-        if (parentId != null) {[m
+[31m-            Commentaire parent = commentaireRepo.findById(parentId)[m
+[31m-                    .orElseThrow(() -> new RuntimeException("Commentaire parent non trouvé"));[m
+[31m-            commentaire.setParent(parent);[m
+[31m-        }[m
+[31m-[m
+[31m-        commentaire = commentaireRepo.save(commentaire);[m
+[31m-        return mapToDTO(commentaire);[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public String toggleLike(User user, Long id) {[m
+[31m-        Commentaire commentaire = commentaireRepo.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Commentaire non trouvé"));[m
+[31m-[m
+[31m-        if (commentaire.getLikes().contains(user)) {[m
+[31m-            commentaire.getLikes().remove(user);[m
+[31m-        } else {[m
+[31m-            commentaire.getLikes().add(user);[m
+[31m-        }[m
+[31m-[m
+[31m-        commentaireRepo.save(commentaire);[m
+[31m-        return "Like sur commentaire mis à jour.";[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public List<CommentaireDTO> getCommentairesAvecReponses(Long pubId) {[m
+[31m-        List<Commentaire> commentaires = commentaireRepo.findByPublicationIdAndParentIsNull(pubId);[m
+[31m-        return commentaires.stream().map(this::mapToDTO).collect(Collectors.toList());[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public String supprimerCommentaire(Long id, User user) {[m
+[31m-        Commentaire c = commentaireRepo.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Commentaire non trouvé"));[m
+[31m-[m
+[31m-        if (!c.getAuteur().getId().equals(user.getId())) {[m
+[31m-            throw new AccessDeniedException("Vous ne pouvez pas supprimer ce commentaire.");[m
+[31m-        }[m
+[31m-[m
+[31m-        commentaireRepo.delete(c);[m
+[31m-        return "Commentaire supprimé.";[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    private CommentaireDTO mapToDTO(Commentaire commentaire) {[m
+[31m-        List<CommentaireDTO> reponsesDTO = commentaire.getReponses() != null[m
+[31m-                ? commentaire.getReponses().stream().map(this::mapToDTO).toList()[m
+[31m-                : List.of();[m
+[31m-[m
+[31m-        return new CommentaireDTO([m
+[31m-                commentaire.getId(),[m
+[31m-                commentaire.getContenu(),[m
+[31m-                commentaire.getAuteur().getPrenom() + " " + commentaire.getAuteur().getNom(),[m
+[31m-                commentaire.getCreatedAt(),[m
+[31m-                commentaire.getLikes() != null ? commentaire.getLikes().size() : 0,[m
+[31m-                reponsesDTO[m
+[31m-        );[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/FileStorageService.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/FileStorageService.java[m
+[1mdeleted file mode 100644[m
+[1mindex 8eebd2d..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/FileStorageService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,24 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Service;[m
+[31m-[m
+[31m-import org.springframework.beans.factory.annotation.Value;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-import org.springframework.web.multipart.MultipartFile;[m
+[31m-[m
+[31m-import java.io.File;[m
+[31m-import java.io.IOException;[m
+[31m-import java.nio.file.*;[m
+[31m-[m
+[31m-@Service[m
+[31m-public class FileStorageService {[m
+[31m-[m
+[31m-    @Value("${upload.path}")[m
+[31m-    private String uploadDir;[m
+[31m-[m
+[31m-    public String saveFile(MultipartFile file) throws IOException {[m
+[31m-        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();[m
+[31m-        Path destination = Paths.get(uploadDir).resolve(filename);[m
+[31m-        Files.createDirectories(destination.getParent());[m
+[31m-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);[m
+[31m-        return "/uploads/" + filename;[m
+[31m-    }[m
+[31m-}[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageService.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageService.java[m
+[1mindex 297b2d9..278c8f4 100644[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageService.java[m
+[1m+++ b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageService.java[m
+[36m@@ -23,8 +23,6 @@[m [mpublic class MessageService {[m
+ [m
+     private final MessageRepository messageRepository;[m
+     private final UserRepository userRepository;[m
+[31m-    private final MessageRepository messageRepo;[m
+[31m-[m
+ [m
+     public MessageResponse sendMessage(User sender, MessageRequest request) {[m
+         User senderEntity = userRepository.findById(sender.getId())[m
+[36m@@ -116,18 +114,20 @@[m [mpublic class MessageService {[m
+     }[m
+ [m
+     public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {[m
+[31m-        List<Message> all = messageRepo.findBySenderOrReceiver(currentUser, currentUser);[m
+[32m+[m[32m        List<Message> all = messageRepository.findBySenderIdOrReceiverId(currentUser.getId(), currentUser.getId());[m
+ [m
+[31m-        Map<User, List<Message>> grouped = new HashMap<>();[m
+[32m+[m[32m        Map<Long, List<Message>> grouped = new HashMap<>();[m
+[32m+[m[32m        Map<Long, User> userMap = new HashMap<>();[m
+ [m
+         for (Message m : all) {[m
+             // Les entités User peuvent être différentes instances représentant le même utilisateur.[m
+[31m-            // Comparer directement les objets peut donc échouer. On compare les identifiants[m
+[31m-            // pour déterminer si le message a été envoyé par l'utilisateur courant.[m
+[32m+[m[32m            // On compare donc les identifiants pour déterminer si le message a été envoyé par l'utilisateur courant.[m
+             User ami = Objects.equals(m.getSender().getId(), currentUser.getId())[m
+                     ? m.getReceiver()[m
+                     : m.getSender();[m
+[31m-            grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);[m
+[32m+[m[32m            Long amiId = ami.getId();[m
+[32m+[m[32m            grouped.computeIfAbsent(amiId, k -> new ArrayList<>()).add(m);[m
+[32m+[m[32m            userMap.putIfAbsent(amiId, ami);[m
+         }[m
+ [m
+         // Trier les messages de chaque conversation[m
+[36m@@ -143,22 +143,9 @@[m [mpublic class MessageService {[m
+                     return last2.compareTo(last1);[m
+                 })[m
+                 .collect(LinkedHashMap::new,[m
+[31m-                        (map, entry) -> map.put(entry.getKey(), entry.getValue()),[m
+[32m+[m[32m                        (map, entry) -> map.put(userMap.get(entry.getKey()), entry.getValue()),[m
+                         Map::putAll);[m
+     }[m
+ [m
+[31m-    public List<Message> getDiscussionWithUser(User currentUser, Long otherUserId) {[m
+[31m-        Optional<User> optionalOtherUser = userRepository.findById(otherUserId);[m
+[31m-        if (optionalOtherUser.isEmpty()) {[m
+[31m-            throw new RuntimeException("Utilisateur introuvable.");[m
+[31m-        }[m
+[31m-[m
+[31m-        User otherUser = optionalOtherUser.get();[m
+[31m-[m
+[31m-        return messageRepo.findBySenderAndReceiverOrReceiverAndSender([m
+[31m-                currentUser, otherUser, currentUser, otherUser[m
+[31m-        );[m
+[31m-    }[m
+[31m-[m
+ [m
+ }[m
+[1mdiff --git a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/PublicationService.java b/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/PublicationService.java[m
+[1mdeleted file mode 100644[m
+[1mindex d4be334..0000000[m
+[1m--- a/src/main/java/HelpingYourSelf/com/HelpingYourSelf/Service/PublicationService.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,121 +0,0 @@[m
+[31m-package HelpingYourSelf.com.HelpingYourSelf.Service;[m
+[31m-[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.DTO.PublicationDTO;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.Commentaire;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.Publication;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Entity.User;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Repository.CommentaireRepository;[m
+[31m-import HelpingYourSelf.com.HelpingYourSelf.Repository.PublicationRepository;[m
+[31m-import org.springframework.data.domain.Page;[m
+[31m-import org.springframework.beans.factory.annotation.Autowired;[m
+[31m-import org.springframework.security.access.AccessDeniedException;[m
+[31m-import org.springframework.stereotype.Service;[m
+[31m-import org.springframework.web.multipart.MultipartFile;[m
+[31m-import org.springframework.data.domain.Pageable;[m
+[31m-[m
+[31m-import java.io.IOException;[m
+[31m-import java.nio.file.Files;[m
+[31m-import java.nio.file.Path;[m
+[31m-import java.nio.file.Paths;[m
+[31m-import java.nio.file.StandardCopyOption;[m
+[31m-import java.util.UUID;[m
+[31m-[m
+[31m-[m
+[31m-import java.util.List;[m
+[31m-[m
+[31m-@Service[m
+[31m-public class PublicationService {[m
+[31m-[m
+[31m-    @Autowired[m
+[31m-    private PublicationRepository publicationRepo;[m
+[31m-    @Autowired private CommentaireRepository commentaireRepo;[m
+[31m-[m
+[31m-    public PublicationDTO poster(User auteur, String texte, MultipartFile media) {[m
+[31m-        Publication pub = new Publication();[m
+[31m-        pub.setAuteur(auteur);[m
+[31m-        pub.setTexte(texte);[m
+[31m-        pub.setMediaUrl(media != null ? saveMedia(media) : null);[m
+[31m-        pub.setMediaType(media != null ? media.getContentType().split("/")[0] : null);[m
+[31m-        publicationRepo.save(pub);[m
+[31m-        return mapToDTO(pub);[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    public Page<PublicationDTO> getPublications(Pageable pageable) {[m
+[31m-        return publicationRepo.findAllByOrderByCreatedAtDesc(pageable)[m
+[31m-                .map(this::mapToDTO);[m
+[31m-    }[m
+[31m-[m
+[31m-    public String toggleLike(User user, Long id) {[m
+[31m-        Publication pub = publicationRepo.findById(id).orElseThrow();[m
+[31m-        if (pub.getLikes().contains(user)) {[m
+[31m-            pub.getLikes().remove(user);[m
+[31m-        } else {[m
+[31m-            pub.getLikes().add(user);[m
+[31m-        }[m
+[31m-        publicationRepo.save(pub);[m
+[31m-        return "Like toggled";[m
+[31m-    }[m
+[31m-[m
+[31m-    public String incrementerPartage(Long id) {[m
+[31m-        Publication pub = publicationRepo.findById(id).orElseThrow();[m
+[31m-        pub.setNombrePartages(pub.getNombrePartages() + 1);[m
+[31m-        publicationRepo.save(pub);[m
+[31m-        return "Partagé avec succès.";[m
+[31m-    }[m
+[31m-[m
+[31m-    public List<Commentaire> getCommentaires(Long pubId) {[m
+[31m-        return commentaireRepo.findByPublicationIdAndParentIsNull(pubId);[m
+[31m-    }[m
+[31m-[m
+[31m-    private PublicationDTO mapToDTO(Publication pub) {[m
+[31m-        return new PublicationDTO([m
+[31m-                pub.getId(), pub.getTexte(), pub.getMediaUrl(), pub.getMediaType(),[m
+[31m-                pub.getAuteur().getPrenom() + " " + pub.getAuteur().getNom(),[m
+[31m-                pub.getCreatedAt(),[m
+[31m-                pub.getCommentaires().size(),[m
+[31m-                pub.getLikes().size(),[m
+[31m-                pub.getNombrePartages()[m
+[31m-        );[m
+[31m-    }[m
+[31m-[m
+[31m-    public String supprimerPublication(Long id, User user) {[m
+[31m-        Publication pub = publicationRepo.findById(id).orElseThrow();[m
+[31m-        if (!pub.getAuteur().getId().equals(user.getId())) {[m
+[31m-            throw new AccessDeniedException("Vous ne pouvez pas supprimer cette publication.");[m
+[31m-        }[m
+[31m-        publicationRepo.delete(pub);[m
+[31m-        return "Publication supprimée.";[m
+[31m-    }[m
+[31m-[m
+[31m-    private String saveMedia(MultipartFile media) {[m
+[31m-        try {[m
+[31m-            String uploadDir = "uploads/";[m
+[31m-            String filename = UUID.randomUUID() + "_" + media.getOriginalFilename();[m
+[31m-            Path filePath = Paths.get(uploadDir, filename);[m
+[31m-            Files.createDirectories(filePath.getParent());[m
+[31m-            Files.copy(media.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);[m
+[31m-            return "/uploads/" + filename;[m
+[31m-        } catch (IOException e) {[m
+[31m-            throw new RuntimeException("Échec de l'enregistrement du fichier", e);[m
+[31m-        }[m
+[31m-    }[m
+[31m-[m
+[31m-    public String updateTexte(Long id, String nouveauTexte, User user) {[m
+[31m-        Publication pub = publicationRepo.findById(id)[m
+[31m-                .orElseThrow(() -> new RuntimeException("Publication introuvable"));[m
+[31m-[m
+[31m-        if (!pub.getAuteur().getId().equals(user.getId())) {[m
+[31m-            throw new AccessDeniedException("Vous n'avez pas le droit de modifier cette publication.");[m
+[31m-        }[m
+[31m-[m
+[31m-        pub.setTexte(nouveauTexte);[m
+[31m-        publicationRepo.save(pub);[m
+[31m-        return "Texte de la publication mise à jour avec succès.";[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-}[m
+[31m-[m
+[1mdiff --git a/src/main/resources/application.properties b/src/main/resources/application.properties[m
+[1mindex 7bc6aa3..4a151c7 100644[m
+[1m--- a/src/main/resources/application.properties[m
+[1m+++ b/src/main/resources/application.properties[m
+[36m@@ -44,7 +44,6 @@[m [mspring.security.oauth2.client.provider.google.token-uri=https://oauth2.googleapi[m
+ spring.security.oauth2.client.provider.google.user-info-uri=https://www.googleapis.com/oauth2/v3/userinfo[m
+ spring.security.oauth2.client.provider.google.user-name-attribute=email[m
+ [m
+[31m-upload.path=uploads/[m
+ [m
+ [m
+ [m
+[1mdiff --git a/src/main/resources/static/formulaire-contact.html b/src/main/resources/static/formulaire-contact.html[m
+[1mindex 827e4da..4423f25 100644[m
+[1m--- a/src/main/resources/static/formulaire-contact.html[m
+[1m+++ b/src/main/resources/static/formulaire-contact.html[m
+[36m@@ -2,7 +2,17 @@[m
+ <html lang="fr">[m
+ <head>[m
+   <meta charset="UTF-8">[m
+[31m-  <title>Ajouter un Contact</title>[m
+[32m+[m[32m  <title>Gestion des Contacts</title>[m
+[32m+[m[32m  <style>[m
+[32m+[m[32m    table, th, td {[m
+[32m+[m[32m      border: 1px solid black;[m
+[32m+[m[32m      border-collapse: collapse;[m
+[32m+[m[32m      padding: 8px;[m
+[32m+[m[32m    }[m
+[32m+[m[32m    th {[m
+[32m+[m[32m      background-color: #f2f2f2;[m
+[32m+[m[32m    }[m
+[32m+[m[32m  </style>[m
+ </head>[m
+ <body>[m
+   <h2>Formulaire d'ajout de contact</h2>[m
+[36m@@ -26,10 +36,29 @@[m
+ [m
+   <p id="resultat"></p>[m
+ [m
+[32m+[m[32m  <h2>Liste des contacts enregistrés</h2>[m
+[32m+[m[32m  <table id="contactsTable">[m
+[32m+[m[32m    <thead>[m
+[32m+[m[32m      <tr>[m
+[32m+[m[32m        <th>Nom</th>[m
+[32m+[m[32m        <th>Prénom</th>[m
+[32m+[m[32m        <th>Adresse</th>[m
+[32m+[m[32m        <th>Sexe</th>[m
+[32m+[m[32m        <th>Email</th>[m
+[32m+[m[32m        <th>Favori</th>[m
+[32m+[m[32m      </tr>[m
+[32m+[m[32m    </thead>[m
+[32m+[m[32m    <tbody>[m
+[32m+[m[32m      <!-- Les lignes seront ajoutées dynamiquement -->[m
+[32m+[m[32m    </tbody>[m
+[32m+[m[32m  </table>[m
+[32m+[m
+   <script>[m
+     const form = document.getElementById('contactForm');[m
+     const resultat = document.getElementById('resultat');[m
+[32m+[m[32m    const contactsTableBody = document.querySelector('#contactsTable tbody');[m
+ [m
+[32m+[m[32m    // ➕ Ajouter un contact[m
+     form.addEventListener('submit', async (e) => {[m
+       e.preventDefault();[m
+ [m
+[36m@@ -53,6 +82,7 @@[m
+         if (response.ok) {[m
+           resultat.textContent = '✅ Contact ajouté avec succès !';[m
+           form.reset();[m
+[32m+[m[32m          await chargerContacts(); // Recharge la liste[m
+         } else {[m
+           resultat.textContent = '❌ Erreur lors de l’ajout';[m
+         }[m
+[36m@@ -61,6 +91,35 @@[m
+         resultat.textContent = '❌ Erreur de connexion au serveur';[m
+       }[m
+     });[m
+[32m+[m
+[32m+[m[32m    // 📋 Charger et afficher les contacts[m
+[32m+[m[32m    async function chargerContacts() {[m
+[32m+[m[32m      try {[m
+[32m+[m[32m        const response = await fetch('/api/contacts/all');[m
+[32m+[m[32m        const contacts = await response.json();[m
+[32m+[m
+[32m+[m[32m        // Réinitialiser la table[m
+[32m+[m[32m        contactsTableBody.innerHTML = '';[m
+[32m+[m
+[32m+[m[32m        contacts.forEach(contact => {[m
+[32m+[m[32m          const row = document.createElement('tr');[m
+[32m+[m[32m          row.innerHTML = `[m
+[32m+[m[32m            <td>${contact.nom}</td>[m
+[32m+[m[32m            <td>${contact.prenom}</td>[m
+[32m+[m[32m            <td>${contact.adresse}</td>[m
+[32m+[m[32m            <td>${contact.sexe}</td>[m
+[32m+[m[32m            <td>${contact.email}</td>[m
+[32m+[m[32m            <td>${contact.favori ? '✅' : ''}</td>[m
+[32m+[m[32m          `;[m
+[32m+[m[32m          contactsTableBody.appendChild(row);[m
+[32m+[m[32m        });[m
+[32m+[m[32m      } catch (error) {[m
+[32m+[m[32m        console.error("Erreur lors du chargement des contacts :", error);[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    // Charger les contacts au démarrage[m
+[32m+[m[32m    chargerContacts();[m
+   </script>[m
+ </body>[m
+ </html>[m
+[1mdiff --git a/src/main/resources/static/index.html b/src/main/resources/static/index.html[m
+[1mnew file mode 100644[m
+[1mindex 0000000..225f9dc[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/resources/static/index.html[m
+[36m@@ -0,0 +1,11 @@[m
+[32m+[m[32m<!DOCTYPE html>[m
+[32m+[m[32m<html lang="en">[m
+[32m+[m[32m<head>[m
+[32m+[m[32m    <meta charset="UTF-8">[m
+[32m+[m[32m    <meta name="viewport" content="width=device-width, initial-scale=1.0">[m
+[32m+[m[32m    <title>Document</title>[m
+[32m+[m[32m</head>[m
+[32m+[m[32m<body>[m
+[32m+[m[32m    <p>test</p>[m
+[32m+[m[32m</body>[m
+[32m+[m[32m</html>[m
+\ No newline at end of file[m
+[1mdiff --git a/src/test/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageServiceTest.java b/src/test/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageServiceTest.java[m
+[1mindex 4befb64..a8b384c 100644[m
+[1m--- a/src/test/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageServiceTest.java[m
+[1m+++ b/src/test/java/HelpingYourSelf/com/HelpingYourSelf/Service/MessageServiceTest.java[m
+[36m@@ -18,6 +18,7 @@[m [mimport java.util.Optional;[m
+ import static org.junit.jupiter.api.Assertions.assertEquals;[m
+ import static org.junit.jupiter.api.Assertions.assertTrue;[m
+ import static org.mockito.ArgumentMatchers.any;[m
+[32m+[m[32mimport static org.mockito.ArgumentMatchers.anyLong;[m
+ import static org.mockito.Mockito.when;[m
+ import static org.mockito.Mockito.verify;[m
+ [m
+[36m@@ -34,9 +35,7 @@[m [mpublic class MessageServiceTest {[m
+ [m
+     @BeforeEach[m
+     void setUp() {[m
+[31m-        // MessageService attends deux instances de MessageRepository :[m
+[31m-        // nous utilisons la même pour les deux paramètres.[m
+[31m-        messageService = new MessageService(messageRepository, userRepository, messageRepository);[m
+[32m+[m[32m        messageService = new MessageService(messageRepository, userRepository);[m
+     }[m
+ [m
+     @Test[m
+[36m@@ -63,7 +62,7 @@[m [mpublic class MessageServiceTest {[m
+         m2.setReceiver(currentUserClone2);[m
+         m2.setTimestamp(Instant.now().plusSeconds(1));[m
+ [m
+[31m-        when(messageRepository.findBySenderOrReceiver(any(User.class), any(User.class)))[m
+[32m+[m[32m        when(messageRepository.findBySenderIdOrReceiverId(anyLong(), anyLong()))[m
+                 .thenReturn(List.of(m1, m2));[m
+ [m
+         Map<User, List<Message>> grouped = messageService.getGroupedDiscussions(currentUser);[m
+[1mdiff --git a/uploads/7808cb2d-58c9-436b-89e9-9711fe7d0f03.jpg b/uploads/7808cb2d-58c9-436b-89e9-9711fe7d0f03.jpg[m
+[1mdeleted file mode 100644[m
+[1mindex c5d21d8..0000000[m
+Binary files a/uploads/7808cb2d-58c9-436b-89e9-9711fe7d0f03.jpg and /dev/null differ
+[1mdiff --git a/uploads/de3efc6a-53ad-409f-912a-6e9e18a75143_LOgo ASC SANTE YALLA.png b/uploads/de3efc6a-53ad-409f-912a-6e9e18a75143_LOgo ASC SANTE YALLA.png[m
+[1mdeleted file mode 100644[m
+[1mindex 3605799..0000000[m
+Binary files a/uploads/de3efc6a-53ad-409f-912a-6e9e18a75143_LOgo ASC SANTE YALLA.png and /dev/null differ
+[1mdiff --git a/witch main b/witch main[m
+[1mdeleted file mode 100644[m
+[1mindex abeb2d9..0000000[m
+[1m--- a/witch main[m	
+[1m+++ /dev/null[m
+[36m@@ -1,268 +0,0 @@[m
+[31m-[33mcommit 307d8e53dcc2a1797ae180de71fcd5267d705fc1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmakha[m[33m, [m[1;31morigin/makha[m[33m)[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Wed Jul 30 19:20:37 2025 +0000[m
+[31m-[m
+[31m-    retour de id de la partie suggestion et les interets de l utilisateur connecter[m
+[31m-[m
+[31m-[33mcommit 140f0474f61170fb9ce69d584e8c15802b86c9da[m[33m ([m[1;32mmain[m[33m)[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Wed Jul 30 12:01:04 2025 +0000[m
+[31m-[m
+[31m-    Ajout de swagger[m
+[31m-[m
+[31m-[33mcommit 2b917998fc07e4c8bdf7e2d0c922ba57f5489934[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Wed Jul 30 10:20:08 2025 +0000[m
+[31m-[m
+[31m-    correction sur les interets et les suggestions demander par bamba[m
+[31m-[m
+[31m-[33mcommit 28022a3e20d1df5eb8b06b1217f7817ebb7cb33f[m[m
+[31m-Merge: 5fdaf8c 6be4b07[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Fri Jul 25 14:53:13 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #14 from khady2204/dev[m
+[31m-    [m
+[31m-    Merge pull request #13 from khady2204/makha[m
+[31m-[m
+[31m-[33mcommit 6be4b0788fe96f0017942e37080d3d9d4cfc7cc9[m[m
+[31m-Merge: d412172 5fdaf8c[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Fri Jul 25 14:48:59 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #13 from khady2204/makha[m
+[31m-    [m
+[31m-    Makha[m
+[31m-[m
+[31m-[33mcommit 5fdaf8c0463d0f236ccd68a075ae8f24dbca33eb[m[m
+[31m-Merge: 9b37dda d412172[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Fri Jul 25 14:48:46 2025 +0000[m
+[31m-[m
+[31m-    Merge branch 'dev' into makha[m
+[31m-[m
+[31m-[33mcommit 9b37ddac1abdbf343a520afbb5dd116994c8e6c1[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Fri Jul 25 13:42:44 2025 +0000[m
+[31m-[m
+[31m-    liste des interets[m
+[31m-[m
+[31m-[33mcommit d41217223f511cd61c87bc56f9609abbd059467b[m[m
+[31m-Author: Abdoulaye <segnanelaye@gmail.com>[m
+[31m-Date:   Thu Jul 24 21:19:23 2025 +0000[m
+[31m-[m
+[31m-    Remplacer le contenu de dev par celui de kara[m
+[31m-[m
+[31m-[33mcommit 300d3e8bdcddc2a3757954f055c5474c5499ef6c[m[m
+[31m-Merge: 9860dfd f5dbd70[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Tue Jul 22 20:27:26 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #10 from khady2204/topaze[m
+[31m-    [m
+[31m-    Topaze[m
+[31m-[m
+[31m-[33mcommit f5dbd704c9447b16994799d15f9ade2616b3e700[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Tue Jul 22 16:50:37 2025 +0000[m
+[31m-[m
+[31m-    partie liste des messages[m
+[31m-[m
+[31m-[33mcommit dfd98a117877eb890e389a542378145d63712d1d[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Tue Jul 22 16:14:08 2025 +0000[m
+[31m-[m
+[31m-    partie liste des messages[m
+[31m-[m
+[31m-[33mcommit 7d33cddc376649d552440647519eab8c765c16b7[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Tue Jul 22 10:46:20 2025 +0000[m
+[31m-[m
+[31m-    partie liste des interets stable[m
+[31m-[m
+[31m-[33mcommit 9860dfd41f074573be0d4bbdad8545a8bcd7853e[m[m
+[31m-Merge: 5dccd45 d7b76ca[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Tue Jul 22 16:00:19 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #8 from khady2204/topaze[m
+[31m-    [m
+[31m-    Topaze[m
+[31m-[m
+[31m-[33mcommit e0712df35d440d17062a1004c1f8a7cedf01cfc4[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Tue Jul 22 10:46:20 2025 +0000[m
+[31m-[m
+[31m-    partie liste des interets stable[m
+[31m-[m
+[31m-[33mcommit d7b76caaf22ccccb3003c0fb9b3d62d7d6fb9b39[m[m
+[31m-Merge: 4b9df0a 3ac9345[m
+[31m-Author: noreyni20 <139374087+noreyni20@users.noreply.github.com>[m
+[31m-Date:   Mon Jul 21 16:48:49 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #7 from khady2204/kara[m
+[31m-    [m
+[31m-    Kara[m
+[31m-[m
+[31m-[33mcommit 3ac934567d681d0c2d435b0a9901928374d31523[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jul 21 16:42:16 2025 +0000[m
+[31m-[m
+[31m-    Profil[m
+[31m-[m
+[31m-[33mcommit f609d32c063ef2a776af7c6f6bc5dfb9d7f6ed16[m[m
+[31m-Merge: 41ac2d0 4b9df0a[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jul 21 16:30:29 2025 +0000[m
+[31m-[m
+[31m-    profil conflit[m
+[31m-[m
+[31m-[33mcommit 41ac2d0684102e442f088779e4c82e6eca42edd6[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jul 21 15:52:09 2025 +0000[m
+[31m-[m
+[31m-    Profil[m
+[31m-[m
+[31m-[33mcommit b43e25dc878431bd6b96dec591e7c90547b9bad2[m[m
+[31m-Merge: 26144f2 4b7356e[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jul 21 15:24:33 2025 +0000[m
+[31m-[m
+[31m-    Profil[m
+[31m-[m
+[31m-[33mcommit 26144f2d13806cc241d92005c994e510c7f78e5b[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jul 21 15:22:56 2025 +0000[m
+[31m-[m
+[31m-    Profil[m
+[31m-[m
+[31m-[33mcommit 4b9df0a8c8c2895da8169a06f9eb25974a61706c[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Mon Jul 21 15:02:07 2025 +0000[m
+[31m-[m
+[31m-    partie message stable[m
+[31m-[m
+[31m-[33mcommit 4b7356ee16732955d616ab20591506bd33d107c5[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Thu Jul 17 18:54:21 2025 +0000[m
+[31m-[m
+[31m-    Sauvegarde des modifications avant changement de branche[m
+[31m-[m
+[31m-[33mcommit 5dccd45dda9620f09255fb0387fc0693ab48ad47[m[m
+[31m-Merge: b9ee0d5 24b8a83[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Thu Jul 10 14:14:32 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #6 from khady2204/topaze[m
+[31m-    [m
+[31m-    partie des interet et des suggestion[m
+[31m-[m
+[31m-[33mcommit 24b8a832b6544b48fe0d63a8dec1da834704324e[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Thu Jul 10 14:13:33 2025 +0000[m
+[31m-[m
+[31m-    partie des interet et des suggestion[m
+[31m-[m
+[31m-[33mcommit ae790c2f46c83c1a05e8affc6facef00a295b6b5[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Tue Jul 8 02:38:51 2025 +0000[m
+[31m-[m
+[31m-    Authenti[m
+[31m-[m
+[31m-[33mcommit a966c59b5225143136ef0a9a3fb8577decff4fc9[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Sun Jul 6 16:24:10 2025 +0200[m
+[31m-[m
+[31m-    Travail en cours sur l'authentification[m
+[31m-[m
+[31m-[33mcommit b9ee0d56266267aa11ff528689d5936517c8af79[m[m
+[31m-Merge: bde4d9b 91e0a1b[m
+[31m-Author: noreyni20 <139374087+noreyni20@users.noreply.github.com>[m
+[31m-Date:   Thu Jul 3 23:13:41 2025 +0200[m
+[31m-[m
+[31m-    Merge pull request #5 from khady2204/kara[m
+[31m-    [m
+[31m-    Kara's Authentification[m
+[31m-[m
+[31m-[33mcommit 91e0a1b90100f5baaa819c581563eb95584c0640[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Wed Jul 2 16:29:20 2025 +0200[m
+[31m-[m
+[31m-    Auth A Valider[m
+[31m-[m
+[31m-[33mcommit 0678357aecf66460d9f9520f2a606bf34a89adf9[m[m
+[31m-Merge: 09cf49d 26eb5e2[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Tue Jul 1 16:23:18 2025 +0200[m
+[31m-[m
+[31m-    Test Auth[m
+[31m-[m
+[31m-[33mcommit 09cf49dbc2b37f636c06e1fbbd1cd8f7e0679c4f[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Tue Jul 1 16:20:18 2025 +0200[m
+[31m-[m
+[31m-    Test Auth[m
+[31m-[m
+[31m-[33mcommit 26eb5e27025ebf03aadcf1b9f586adcb3fb18382[m[m
+[31m-Merge: b095595 10dced7[m
+[31m-Author: noreyni20 <139374087+noreyni20@users.noreply.github.com>[m
+[31m-Date:   Mon Jun 30 23:16:53 2025 +0200[m
+[31m-[m
+[31m-    Merge branch 'dev' into kara[m
+[31m-[m
+[31m-[33mcommit b095595cf7ff97c508bfa3e15ae8f15f6abe94d7[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jun 30 20:07:20 2025 +0200[m
+[31m-[m
+[31m-    Authentification finalisee[m
+[31m-[m
+[31m-[33mcommit 10dced7a19e480ff97eae2d1c8e7e5f1e0327afc[m[m
+[31m-Merge: bde4d9b 58c894c[m
+[31m-Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>[m
+[31m-Date:   Mon Jun 30 13:37:21 2025 +0000[m
+[31m-[m
+[31m-    Merge pull request #3 from khady2204/makha[m
+[31m-    [m
+[31m-    Makha[m
+[31m-[m
+[31m-[33mcommit 58c894c9de2e43fa65c7579e3f6e2d4f9747ce89[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Mon Jun 30 13:33:11 2025 +0000[m
+[31m-[m
+[31m-    partie sugestion ; discussion ;[m
+[31m-[m
+[31m-[33mcommit 72a58ac9c666494aadc17e2a5ba462ff89d01de2[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Fri Jun 27 21:57:39 2025 +0000[m
+[31m-[m
+[31m-    Auth[m
+[31m-[m
+[31m-[33mcommit 58f4fc278a72d0e0d2ab86b52a504c9026b078c1[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Fri Jun 27 16:11:50 2025 +0000[m
+[31m-[m
+[31m-    Auth[m
+[31m-[m
+[31m-[33mcommit 361f6ae0158f0587a66c7ede94e5fcabc8ec9fba[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Thu Jun 26 23:58:12 2025 +0000[m
+[31m-[m
+[31m-    contact avec la vue[m
+[31m-[m
+[31m-[33mcommit c7af08f916171fbad51fb94abc5bda8779c2931b[m[m
+[31m-Author: veto18207 <veto18207@gmail.com>[m
+[31m-Date:   Thu Jun 26 15:00:31 2025 +0000[m
+[31m-[m
+[31m-    partie contact[m
+[31m-[m
+[31m-[33mcommit 6582e88a19af5709052aa7a7ca4dd5c7d136d00c[m[m
+[31m-Author: noreyni20 <modoukarakandji7@gmail.com>[m
+[31m-Date:   Mon Jun 16 23:11:59 2025 +0000[m
+[31m-[m
+[31m-    Authentification[m
+[31m-[m
+[31m-[33mcommit bde4d9bdb5077d63463850fdcfd773d1c5e92adc[m[m
+[31m-Author: khady2204 <khady.kandji3@unchk.edu.sn>[m
+[31m-Date:   Wed Jun 11 12:43:45 2025 +0000[m
+[31m-[m
+[31m-    Initial commit - ajout du projet[m

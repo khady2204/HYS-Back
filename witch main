@@ -1,0 +1,268 @@
+[33mcommit 307d8e53dcc2a1797ae180de71fcd5267d705fc1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmakha[m[33m, [m[1;31morigin/makha[m[33m)[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Wed Jul 30 19:20:37 2025 +0000
+
+    retour de id de la partie suggestion et les interets de l utilisateur connecter
+
+[33mcommit 140f0474f61170fb9ce69d584e8c15802b86c9da[m[33m ([m[1;32mmain[m[33m)[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Wed Jul 30 12:01:04 2025 +0000
+
+    Ajout de swagger
+
+[33mcommit 2b917998fc07e4c8bdf7e2d0c922ba57f5489934[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Wed Jul 30 10:20:08 2025 +0000
+
+    correction sur les interets et les suggestions demander par bamba
+
+[33mcommit 28022a3e20d1df5eb8b06b1217f7817ebb7cb33f[m
+Merge: 5fdaf8c 6be4b07
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Fri Jul 25 14:53:13 2025 +0000
+
+    Merge pull request #14 from khady2204/dev
+    
+    Merge pull request #13 from khady2204/makha
+
+[33mcommit 6be4b0788fe96f0017942e37080d3d9d4cfc7cc9[m
+Merge: d412172 5fdaf8c
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Fri Jul 25 14:48:59 2025 +0000
+
+    Merge pull request #13 from khady2204/makha
+    
+    Makha
+
+[33mcommit 5fdaf8c0463d0f236ccd68a075ae8f24dbca33eb[m
+Merge: 9b37dda d412172
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Fri Jul 25 14:48:46 2025 +0000
+
+    Merge branch 'dev' into makha
+
+[33mcommit 9b37ddac1abdbf343a520afbb5dd116994c8e6c1[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Fri Jul 25 13:42:44 2025 +0000
+
+    liste des interets
+
+[33mcommit d41217223f511cd61c87bc56f9609abbd059467b[m
+Author: Abdoulaye <segnanelaye@gmail.com>
+Date:   Thu Jul 24 21:19:23 2025 +0000
+
+    Remplacer le contenu de dev par celui de kara
+
+[33mcommit 300d3e8bdcddc2a3757954f055c5474c5499ef6c[m
+Merge: 9860dfd f5dbd70
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Tue Jul 22 20:27:26 2025 +0000
+
+    Merge pull request #10 from khady2204/topaze
+    
+    Topaze
+
+[33mcommit f5dbd704c9447b16994799d15f9ade2616b3e700[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Tue Jul 22 16:50:37 2025 +0000
+
+    partie liste des messages
+
+[33mcommit dfd98a117877eb890e389a542378145d63712d1d[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Tue Jul 22 16:14:08 2025 +0000
+
+    partie liste des messages
+
+[33mcommit 7d33cddc376649d552440647519eab8c765c16b7[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Tue Jul 22 10:46:20 2025 +0000
+
+    partie liste des interets stable
+
+[33mcommit 9860dfd41f074573be0d4bbdad8545a8bcd7853e[m
+Merge: 5dccd45 d7b76ca
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Tue Jul 22 16:00:19 2025 +0000
+
+    Merge pull request #8 from khady2204/topaze
+    
+    Topaze
+
+[33mcommit e0712df35d440d17062a1004c1f8a7cedf01cfc4[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Tue Jul 22 10:46:20 2025 +0000
+
+    partie liste des interets stable
+
+[33mcommit d7b76caaf22ccccb3003c0fb9b3d62d7d6fb9b39[m
+Merge: 4b9df0a 3ac9345
+Author: noreyni20 <139374087+noreyni20@users.noreply.github.com>
+Date:   Mon Jul 21 16:48:49 2025 +0000
+
+    Merge pull request #7 from khady2204/kara
+    
+    Kara
+
+[33mcommit 3ac934567d681d0c2d435b0a9901928374d31523[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jul 21 16:42:16 2025 +0000
+
+    Profil
+
+[33mcommit f609d32c063ef2a776af7c6f6bc5dfb9d7f6ed16[m
+Merge: 41ac2d0 4b9df0a
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jul 21 16:30:29 2025 +0000
+
+    profil conflit
+
+[33mcommit 41ac2d0684102e442f088779e4c82e6eca42edd6[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jul 21 15:52:09 2025 +0000
+
+    Profil
+
+[33mcommit b43e25dc878431bd6b96dec591e7c90547b9bad2[m
+Merge: 26144f2 4b7356e
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jul 21 15:24:33 2025 +0000
+
+    Profil
+
+[33mcommit 26144f2d13806cc241d92005c994e510c7f78e5b[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jul 21 15:22:56 2025 +0000
+
+    Profil
+
+[33mcommit 4b9df0a8c8c2895da8169a06f9eb25974a61706c[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Mon Jul 21 15:02:07 2025 +0000
+
+    partie message stable
+
+[33mcommit 4b7356ee16732955d616ab20591506bd33d107c5[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Thu Jul 17 18:54:21 2025 +0000
+
+    Sauvegarde des modifications avant changement de branche
+
+[33mcommit 5dccd45dda9620f09255fb0387fc0693ab48ad47[m
+Merge: b9ee0d5 24b8a83
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Thu Jul 10 14:14:32 2025 +0000
+
+    Merge pull request #6 from khady2204/topaze
+    
+    partie des interet et des suggestion
+
+[33mcommit 24b8a832b6544b48fe0d63a8dec1da834704324e[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Thu Jul 10 14:13:33 2025 +0000
+
+    partie des interet et des suggestion
+
+[33mcommit ae790c2f46c83c1a05e8affc6facef00a295b6b5[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Tue Jul 8 02:38:51 2025 +0000
+
+    Authenti
+
+[33mcommit a966c59b5225143136ef0a9a3fb8577decff4fc9[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Sun Jul 6 16:24:10 2025 +0200
+
+    Travail en cours sur l'authentification
+
+[33mcommit b9ee0d56266267aa11ff528689d5936517c8af79[m
+Merge: bde4d9b 91e0a1b
+Author: noreyni20 <139374087+noreyni20@users.noreply.github.com>
+Date:   Thu Jul 3 23:13:41 2025 +0200
+
+    Merge pull request #5 from khady2204/kara
+    
+    Kara's Authentification
+
+[33mcommit 91e0a1b90100f5baaa819c581563eb95584c0640[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Wed Jul 2 16:29:20 2025 +0200
+
+    Auth A Valider
+
+[33mcommit 0678357aecf66460d9f9520f2a606bf34a89adf9[m
+Merge: 09cf49d 26eb5e2
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Tue Jul 1 16:23:18 2025 +0200
+
+    Test Auth
+
+[33mcommit 09cf49dbc2b37f636c06e1fbbd1cd8f7e0679c4f[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Tue Jul 1 16:20:18 2025 +0200
+
+    Test Auth
+
+[33mcommit 26eb5e27025ebf03aadcf1b9f586adcb3fb18382[m
+Merge: b095595 10dced7
+Author: noreyni20 <139374087+noreyni20@users.noreply.github.com>
+Date:   Mon Jun 30 23:16:53 2025 +0200
+
+    Merge branch 'dev' into kara
+
+[33mcommit b095595cf7ff97c508bfa3e15ae8f15f6abe94d7[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jun 30 20:07:20 2025 +0200
+
+    Authentification finalisee
+
+[33mcommit 10dced7a19e480ff97eae2d1c8e7e5f1e0327afc[m
+Merge: bde4d9b 58c894c
+Author: VETO18207 <71079446+VETO18207@users.noreply.github.com>
+Date:   Mon Jun 30 13:37:21 2025 +0000
+
+    Merge pull request #3 from khady2204/makha
+    
+    Makha
+
+[33mcommit 58c894c9de2e43fa65c7579e3f6e2d4f9747ce89[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Mon Jun 30 13:33:11 2025 +0000
+
+    partie sugestion ; discussion ;
+
+[33mcommit 72a58ac9c666494aadc17e2a5ba462ff89d01de2[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Fri Jun 27 21:57:39 2025 +0000
+
+    Auth
+
+[33mcommit 58f4fc278a72d0e0d2ab86b52a504c9026b078c1[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Fri Jun 27 16:11:50 2025 +0000
+
+    Auth
+
+[33mcommit 361f6ae0158f0587a66c7ede94e5fcabc8ec9fba[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Thu Jun 26 23:58:12 2025 +0000
+
+    contact avec la vue
+
+[33mcommit c7af08f916171fbad51fb94abc5bda8779c2931b[m
+Author: veto18207 <veto18207@gmail.com>
+Date:   Thu Jun 26 15:00:31 2025 +0000
+
+    partie contact
+
+[33mcommit 6582e88a19af5709052aa7a7ca4dd5c7d136d00c[m
+Author: noreyni20 <modoukarakandji7@gmail.com>
+Date:   Mon Jun 16 23:11:59 2025 +0000
+
+    Authentification
+
+[33mcommit bde4d9bdb5077d63463850fdcfd773d1c5e92adc[m
+Author: khady2204 <khady.kandji3@unchk.edu.sn>
+Date:   Wed Jun 11 12:43:45 2025 +0000
+
+    Initial commit - ajout du projet

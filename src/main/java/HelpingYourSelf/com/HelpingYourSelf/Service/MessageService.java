@@ -24,6 +24,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
+
     public MessageResponse sendMessage(User sender, MessageRequest request) {
         User senderEntity = userRepository.findById(sender.getId())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -104,6 +105,20 @@ public class MessageService {
     public void markMessageAsRead(Long messageId, User currentUser) {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
+<<<<<<< HEAD
+=======
+
+        if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
+            throw new RuntimeException("Not authorized to mark this message as read");
+        }
+
+        message.setRead(true);
+        messageRepository.save(message);
+    }
+
+    public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
+        List<Message> all = messageRepo.findBySenderOrReceiver(currentUser, currentUser);
+>>>>>>> khady/makha
 
         if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
             throw new RuntimeException("Not authorized to mark this message as read");
@@ -121,6 +136,7 @@ public class MessageService {
 
         for (Message m : all) {
             // Les entités User peuvent être différentes instances représentant le même utilisateur.
+<<<<<<< HEAD
             // On compare donc les identifiants pour déterminer si le message a été envoyé par l'utilisateur courant.
             User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
                     ? m.getReceiver()
@@ -128,6 +144,14 @@ public class MessageService {
             Long amiId = ami.getId();
             grouped.computeIfAbsent(amiId, k -> new ArrayList<>()).add(m);
             userMap.putIfAbsent(amiId, ami);
+=======
+            // Comparer directement les objets peut donc échouer. On compare les identifiants
+            // pour déterminer si le message a été envoyé par l'utilisateur courant.
+            User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
+                    ? m.getReceiver()
+                    : m.getSender();
+            grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
+>>>>>>> khady/makha
         }
 
         // Trier les messages de chaque conversation
@@ -145,6 +169,19 @@ public class MessageService {
                 .collect(LinkedHashMap::new,
                         (map, entry) -> map.put(userMap.get(entry.getKey()), entry.getValue()),
                         Map::putAll);
+    }
+
+    public List<Message> getDiscussionWithUser(User currentUser, Long otherUserId) {
+        Optional<User> optionalOtherUser = userRepository.findById(otherUserId);
+        if (optionalOtherUser.isEmpty()) {
+            throw new RuntimeException("Utilisateur introuvable.");
+        }
+
+        User otherUser = optionalOtherUser.get();
+
+        return messageRepo.findBySenderAndReceiverOrReceiverAndSender(
+                currentUser, otherUser, currentUser, otherUser
+        );
     }
 
 
