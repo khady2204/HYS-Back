@@ -5,6 +5,15 @@ import jakarta.persistence.*;
 
 import java.time.Instant;
 
+/**
+ * Entity representing a message exchanged between two users.
+ *
+ * <p>
+ * The {@code isRead} field is mapped to the {@code is_read} column in the database. It defaults
+ * to {@code false} and is ensured to be {@code false} at persistence time if not explicitly set.
+ * </p>
+ */
+
 @Entity
 @Table(name = "messages")
 public class Message {
@@ -39,7 +48,13 @@ public class Message {
     private Integer audioDuration;
 
     @Column(name = "is_read", nullable = false)
-    private boolean read = false;
+    private boolean isRead = false;
+
+    @PrePersist
+    protected void prePersist() {
+        // Ensure the read flag is always initialized
+        this.isRead = false;
+    }
 
     public Message() {
         this.timestamp = Instant.now();
@@ -112,10 +127,10 @@ public class Message {
     }
 
     public boolean isRead() {
-        return read;
+        return isRead;
     }
 
     public void setRead(boolean read) {
-        this.read = read;
+        this.isRead = read;
     }
 }
