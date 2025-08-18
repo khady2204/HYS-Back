@@ -18,10 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-<<<<<<< HEAD
 import static org.mockito.ArgumentMatchers.anyLong;
-=======
->>>>>>> khady/makha
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -38,13 +35,7 @@ public class MessageServiceTest {
 
     @BeforeEach
     void setUp() {
-<<<<<<< HEAD
         messageService = new MessageService(messageRepository, userRepository);
-=======
-        // MessageService attends deux instances de MessageRepository :
-        // nous utilisons la même pour les deux paramètres.
-        messageService = new MessageService(messageRepository, userRepository, messageRepository);
->>>>>>> khady/makha
     }
 
     @Test
@@ -71,11 +62,7 @@ public class MessageServiceTest {
         m2.setReceiver(currentUserClone2);
         m2.setTimestamp(Instant.now().plusSeconds(1));
 
-<<<<<<< HEAD
         when(messageRepository.findBySenderIdOrReceiverId(anyLong(), anyLong()))
-=======
-        when(messageRepository.findBySenderOrReceiver(any(User.class), any(User.class)))
->>>>>>> khady/makha
                 .thenReturn(List.of(m1, m2));
 
         Map<User, List<Message>> grouped = messageService.getGroupedDiscussions(currentUser);

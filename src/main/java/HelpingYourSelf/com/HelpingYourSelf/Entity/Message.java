@@ -48,7 +48,6 @@ public class Message {
     private Integer audioDuration;
 
     @Column(name = "is_read", nullable = false)
-<<<<<<< HEAD
     private boolean isRead = false;
 
     @PrePersist
@@ -56,9 +55,6 @@ public class Message {
         // Ensure the read flag is always initialized
         this.isRead = false;
     }
-=======
-    private boolean read = false;
->>>>>>> khady/makha
 
     public Message() {
         this.timestamp = Instant.now();
@@ -131,18 +127,10 @@ public class Message {
     }
 
     public boolean isRead() {
-<<<<<<< HEAD
         return isRead;
     }
 
     public void setRead(boolean read) {
         this.isRead = read;
-=======
-        return read;
-    }
-
-    public void setRead(boolean read) {
-        this.read = read;
->>>>>>> khady/makha
     }
 }
