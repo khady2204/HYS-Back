@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -96,6 +95,5 @@ public class MessageController {
             return ResponseEntity.status(404).body(e.getMessage());
         }
     }
-
 
 }
