@@ -69,10 +69,13 @@ public class MessageController {
                 .map(entry -> new DiscussionResponse(
                         new UserSummary(
                                 entry.getKey().getId(),
-                                entry.getKey().getPrenom(),
                                 entry.getKey().getNom(),
-                                entry.getKey().getProfileImage(),
-                                entry.getKey().getPhone()
+                                entry.getKey().getPrenom(),
+                                entry.getKey().getEmail(),
+                                entry.getKey().getPhone(),
+                                entry.getKey().getAdresse(),
+                                entry.getKey().getBio(),
+                                entry.getKey().getProfileImage()
                         ),
                         entry.getValue()
                 ))
@@ -81,11 +84,32 @@ public class MessageController {
         return ResponseEntity.ok(discussions);
     }
 
+
+
+    @GetMapping("/discussions/search")
+    public ResponseEntity<?> searchDiscussion(
+            @AuthenticationPrincipal(expression = "user") User currentUser,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String prenom
+    ) {
+        if (currentUser == null) {
+            return ResponseEntity.status(401).body("Non authentifié");
+        }
+
+        Optional<User> optionalAmi = Optional.empty();
+
+        if (phone != null && !phone.isBlank()) {
+            optionalAmi = UserRepository.findByPhone(phone);
+        } else if (nom != null && prenom != null) {
+            optionalAmi = UserRepository.findByNomAndPrenom(nom.trim(), prenom.trim());
+
     @PutMapping("/{messageId}/read")
     public ResponseEntity<?> markAsRead(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
                                         @PathVariable Long messageId) {
         if (currentUserDetails == null) {
             return ResponseEntity.status(401).body("Unauthorized");
+
         }
 
         try {

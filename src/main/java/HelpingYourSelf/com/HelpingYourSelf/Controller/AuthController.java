@@ -4,6 +4,7 @@ import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Service.AuthService;
 
+import HelpingYourSelf.com.HelpingYourSelf.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
@@ -17,6 +18,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:8100")
 @RestController
@@ -26,6 +28,7 @@ public class AuthController {
 
     private final AuthService auth;
     private final UserRepository userRepo;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -36,8 +39,29 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req, HttpServletRequest http) {
         String token = auth.login(req, http.getRemoteAddr());
+
+        // Mise à jour de isOnline = true selon que l’utilisateur utilise email ou téléphone
+        Optional<User> optionalUser = Optional.empty();
+
+        if (req.getPhone() != null && !req.getPhone().isEmpty()) {
+            optionalUser = userRepo.findByPhone(req.getPhone());
+        } else if (req.getEmail() != null && !req.getEmail().isEmpty()) {
+            optionalUser = userRepo.findByEmail(req.getEmail());
+        }
+
+        optionalUser.ifPresent(user -> {
+            user.setIsOnline(true);
+            userRepo.save(user);
+        });
+
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMonProfil(@AuthenticationPrincipal(expression = "user") User user) {
+        return ResponseEntity.ok(userService.getMonProfil(user));
+    }
+
 
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody OtpLoginRequest req) {
@@ -89,19 +113,11 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal User currentUser) {
-        if (currentUser == null) {
-            return ResponseEntity.status(401).body("Non authentifié");
-        }
-
-        currentUser.setIsOnline(false);
-        currentUser.setLastOnlineAt(Instant.now());
-        userRepo.save(currentUser);
-
+    public ResponseEntity<?> logout(@AuthenticationPrincipal(expression = "user") User user) {
+        user.setIsOnline(false);
+        userRepo.save(user);
         return ResponseEntity.ok("Déconnexion réussie");
-
-
-
     }
+
 
 }
