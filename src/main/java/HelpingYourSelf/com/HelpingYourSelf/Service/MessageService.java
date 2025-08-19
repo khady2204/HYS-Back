@@ -11,6 +11,10 @@ import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,8 +25,10 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+
     private final MessageRepository messageRepo;
     private final NotificationService notificationService;
+
 
     public MessageResponse sendMessage(User sender, MessageRequest request) {
         User senderEntity = userRepository.findById(sender.getId())
@@ -35,6 +41,31 @@ public class MessageService {
         message.setReceiver(receiver);
         message.setContent(request.getContent());
         message.setTimestamp(Instant.now());
+        message.setAudioDuration(request.getAudioDuration());
+
+        if (request.getMediaFile() != null && !request.getMediaFile().isEmpty()) {
+            try {
+                String uploadDir = System.getProperty("user.dir") + "/uploads";
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String original = Objects.requireNonNull(request.getMediaFile().getOriginalFilename());
+                String extension = "";
+                int dot = original.lastIndexOf('.');
+                if (dot >= 0) {
+                    extension = original.substring(dot);
+                }
+
+                String fileName = UUID.randomUUID() + extension;
+                Path filePath = Paths.get(uploadDir, fileName);
+                request.getMediaFile().transferTo(filePath.toFile());
+
+                String mediaUrl = "/media/" + fileName;
+                message.setMediaUrl(mediaUrl);
+                message.setMediaType(request.getMediaType());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not store media file", e);
+            }
+        }
 
         Message savedMessage = messageRepository.save(message);
 
@@ -53,7 +84,11 @@ public class MessageService {
                 savedMessage.getSender().getId(),
                 savedMessage.getReceiver().getId(),
                 savedMessage.getContent(),
-                savedMessage.getTimestamp()
+                savedMessage.getTimestamp(),
+                savedMessage.getMediaUrl(),
+                savedMessage.getMediaType(),
+                savedMessage.getAudioDuration(),
+                savedMessage.isRead()
         );
     }
 
@@ -73,19 +108,42 @@ public class MessageService {
                         m.getSender().getId(),
                         m.getReceiver().getId(),
                         m.getContent(),
-                        m.getTimestamp()
+                        m.getTimestamp(),
+                        m.getMediaUrl(),
+                        m.getMediaType(),
+                        m.getAudioDuration(),
+                        m.isRead()
                 ))
                 .collect(Collectors.toList());
     }
 
-    public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
-        List<Message> all = messageRepo.findBySenderOrReceiver(currentUser, currentUser);
+    public void markMessageAsRead(Long messageId, User currentUser) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
 
-        Map<User, List<Message>> grouped = new HashMap<>();
+        if (!Objects.equals(message.getReceiver().getId(), currentUser.getId())) {
+            throw new RuntimeException("Not authorized to mark this message as read");
+        }
+
+        message.setRead(true);
+        messageRepository.save(message);
+    }
+
+    public Map<User, List<Message>> getGroupedDiscussions(User currentUser) {
+        List<Message> all = messageRepository.findBySenderIdOrReceiverId(currentUser.getId(), currentUser.getId());
+
+        Map<Long, List<Message>> grouped = new HashMap<>();
+        Map<Long, User> userMap = new HashMap<>();
 
         for (Message m : all) {
-            User ami = m.getSender().equals(currentUser) ? m.getReceiver() : m.getSender();
-            grouped.computeIfAbsent(ami, k -> new ArrayList<>()).add(m);
+            // Les entités User peuvent être différentes instances représentant le même utilisateur.
+            // On compare donc les identifiants pour déterminer si le message a été envoyé par l'utilisateur courant.
+            User ami = Objects.equals(m.getSender().getId(), currentUser.getId())
+                    ? m.getReceiver()
+                    : m.getSender();
+            Long amiId = ami.getId();
+            grouped.computeIfAbsent(amiId, k -> new ArrayList<>()).add(m);
+            userMap.putIfAbsent(amiId, ami);
         }
 
         // Trier chaque discussion par date
@@ -101,7 +159,7 @@ public class MessageService {
                     return last2.compareTo(last1);
                 })
                 .collect(LinkedHashMap::new,
-                        (map, entry) -> map.put(entry.getKey(), entry.getValue()),
+                        (map, entry) -> map.put(userMap.get(entry.getKey()), entry.getValue()),
                         Map::putAll);
     }
 
@@ -113,8 +171,8 @@ public class MessageService {
 
         User otherUser = optionalOtherUser.get();
 
-        return messageRepo.findBySenderAndReceiverOrReceiverAndSender(
-                currentUser, otherUser, currentUser, otherUser
+        return messageRepository.findBySenderAndReceiverOrReceiverAndSender(
+                currentUser, otherUser, otherUser, currentUser
         );
     }
 }

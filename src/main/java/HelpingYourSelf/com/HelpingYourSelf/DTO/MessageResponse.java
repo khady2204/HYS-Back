@@ -9,13 +9,22 @@ public class MessageResponse {
     private Long receiverId;
     private String content;
     private Instant timestamp;
+    private String mediaUrl;
+    private String mediaType;
+    private Integer audioDuration;
+    private boolean read;
 
-    public MessageResponse(Long id, Long senderId, Long receiverId, String content, Instant timestamp) {
+    public MessageResponse(Long id, Long senderId, Long receiverId, String content, Instant timestamp,
+                           String mediaUrl, String mediaType, Integer audioDuration, boolean read) {
         this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.content = content;
         this.timestamp = timestamp;
+        this.mediaUrl = mediaUrl;
+        this.mediaType = mediaType;
+        this.audioDuration = audioDuration;
+        this.read = read;
     }
 
     public Long getId() {
@@ -36,5 +45,21 @@ public class MessageResponse {
 
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public Integer getAudioDuration() {
+        return audioDuration;
+    }
+
+    public boolean isRead() {
+        return read;
     }
 }

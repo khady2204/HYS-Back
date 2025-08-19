@@ -5,20 +5,19 @@ import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageResponse;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UserSummary;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
-import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails;
 import HelpingYourSelf.com.HelpingYourSelf.Service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
-
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -26,13 +25,11 @@ import java.util.Optional;
 public class MessageController {
 
     private final MessageService messageService;
-    private final UserRepository UserRepository;
-
 
     // ✅ Envoie d’un message
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> sendMessage(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
-                                         @Valid @RequestBody MessageRequest request) {
+                                         @Valid @ModelAttribute MessageRequest request) {
         if (currentUserDetails == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
@@ -47,7 +44,7 @@ public class MessageController {
         }
     }
 
-    //  Récupération des messages entre deux utilisateurs
+    // ✅ Récupération des messages entre deux utilisateurs
     @GetMapping("/{userId}")
     public ResponseEntity<List<MessageResponse>> getMessages(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
                                                              @PathVariable Long userId) {
@@ -88,6 +85,7 @@ public class MessageController {
     }
 
 
+
     @GetMapping("/discussions/search")
     public ResponseEntity<?> searchDiscussion(
             @AuthenticationPrincipal(expression = "user") User currentUser,
@@ -105,15 +103,21 @@ public class MessageController {
             optionalAmi = UserRepository.findByPhone(phone);
         } else if (nom != null && prenom != null) {
             optionalAmi = UserRepository.findByNomAndPrenom(nom.trim(), prenom.trim());
+
+    @PutMapping("/{messageId}/read")
+    public ResponseEntity<?> markAsRead(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
+                                        @PathVariable Long messageId) {
+        if (currentUserDetails == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+
         }
 
-        if (optionalAmi.isEmpty()) {
-            return ResponseEntity.status(404).body("Aucun utilisateur trouvé avec les informations fournies.");
+        try {
+            messageService.markMessageAsRead(messageId, currentUserDetails.getUser());
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
-
-        List<Message> messages = messageService.getDiscussionWithUser(currentUser, optionalAmi.get().getId());
-
-
-        return ResponseEntity.ok(messages);
     }
+
 }
