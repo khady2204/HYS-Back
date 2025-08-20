@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>WebSocket Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body>
+    <h1>WebSocket Notifications</h1>
+    <input id="message" type="text" placeholder="Message" />
+    <button id="send">Envoyer</button>
+    <ul id="messages"></ul>
+    <script>
+        const socket = new SockJS('/ws');
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, () => {
+            stompClient.subscribe('/topic/notifications', (msg) => {
+                const body = JSON.parse(msg.body);
+                const li = document.createElement('li');
+                li.textContent = `${body.sender || 'anon'}: ${body.content}`;
+                document.getElementById('messages').appendChild(li);
+            });
+        });
+
+        document.getElementById('send').addEventListener('click', () => {
+            const content = document.getElementById('message').value;
+            stompClient.send('/app/notify', {}, JSON.stringify({ content }));
+            document.getElementById('message').value = '';
+        });
+    </script>
+</body>
+</html>
+
