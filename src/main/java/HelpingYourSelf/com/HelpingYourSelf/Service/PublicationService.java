@@ -1,34 +1,33 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.PublicationDTO;
-import HelpingYourSelf.com.HelpingYourSelf.Entity.Commentaire;
-import HelpingYourSelf.com.HelpingYourSelf.Entity.Publication;
-import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.*;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.CommentaireRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.PublicationRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
-
-
+import java.nio.file.*;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class PublicationService {
 
     @Autowired
     private PublicationRepository publicationRepo;
-    @Autowired private CommentaireRepository commentaireRepo;
+
+    @Autowired
+    private CommentaireRepository commentaireRepo;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public PublicationDTO poster(User auteur, String texte, MultipartFile media) {
         Publication pub = new Publication();
@@ -38,9 +37,9 @@ public class PublicationService {
         pub.setMediaType(media != null ? media.getContentType().split("/")[0] : null);
         publicationRepo.save(pub);
         return mapToDTO(pub);
+
+
     }
-
-
 
     public Page<PublicationDTO> getPublications(Pageable pageable) {
         return publicationRepo.findAllByOrderByCreatedAtDesc(pageable)
@@ -53,6 +52,16 @@ public class PublicationService {
             pub.getLikes().remove(user);
         } else {
             pub.getLikes().add(user);
+
+            // 🔔 Notification pour l’auteur
+            if (!pub.getAuteur().getId().equals(user.getId())) {
+                notificationService.envoyerNotification(Notification.builder()
+                        .emetteur(user)
+                        .destinataire(pub.getAuteur())
+                        .message(user.getPrenom() + " a aimé votre publication.")
+                        .type(NotificationType.LIKE)
+                        .build());
+            }
         }
         publicationRepo.save(pub);
         return "Like toggled";
@@ -71,7 +80,10 @@ public class PublicationService {
 
     private PublicationDTO mapToDTO(Publication pub) {
         return new PublicationDTO(
-                pub.getId(), pub.getTexte(), pub.getMediaUrl(), pub.getMediaType(),
+                pub.getId(),
+                pub.getTexte(),
+                pub.getMediaUrl(),
+                pub.getMediaType(),
                 pub.getAuteur().getPrenom() + " " + pub.getAuteur().getNom(),
                 pub.getCreatedAt(),
                 pub.getCommentaires().size(),
@@ -112,10 +124,22 @@ public class PublicationService {
 
         pub.setTexte(nouveauTexte);
         publicationRepo.save(pub);
+
+        // 🔔 Notification à tous les followers
+        Set<User> followers = user.getFollowers();
+        for (User follower : followers) {
+            notificationService.envoyerNotification(Notification.builder()
+                    .emetteur(user)
+                    .destinataire(follower)
+                    .message(user.getPrenom() + " a mis à jour une de ses publications.")
+                    .type(NotificationType.MISE_A_JOUR_PUBLICATION)
+                    .build());
+        }
+
         return "Texte de la publication mise à jour avec succès.";
     }
 
 
 
-}
 
+}

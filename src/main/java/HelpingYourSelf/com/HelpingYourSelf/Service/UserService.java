@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
+import HelpingYourSelf.com.HelpingYourSelf.DTO.UserDTO;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Interet;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
@@ -75,5 +76,20 @@ public class UserService {
 
         user.getInterets().addAll(interets); // ajoute sans écraser
         userRepository.save(user);
+    }
+
+    public UserDTO getMonProfil(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getNom(),
+                user.getPrenom(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getBio(),
+                user.getAdresse(),
+                user.getIsOnline(),
+                user.getProfileImage()
+
+        );
     }
 }
