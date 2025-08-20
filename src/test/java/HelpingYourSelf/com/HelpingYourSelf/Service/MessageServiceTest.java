@@ -31,11 +31,14 @@ public class MessageServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private MessageService messageService;
 
     @BeforeEach
     void setUp() {
-        messageService = new MessageService(messageRepository, userRepository);
+        messageService = new MessageService(messageRepository, userRepository, notificationService);
     }
 
     @Test

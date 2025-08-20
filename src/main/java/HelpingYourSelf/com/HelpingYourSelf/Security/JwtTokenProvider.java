@@ -25,13 +25,13 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        // Convertir la clé en SecretKey adaptée à HS512
+
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
     }
 
     public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getPhone()) // ou .setSubject(user.getEmail()) si tu préfères
+                .setSubject(user.getPhone())
                 .claim("id", user.getId())
                 .claim("email", user.getEmail())
                 .claim("nom", user.getNom())
@@ -47,6 +47,37 @@ public class JwtTokenProvider {
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
+
+
+
+    public String generateTokenFromUser(User user) {
+
+        user.setIsOnline(true);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("email", user.getEmail());
+        claims.put("nom", user.getNom());
+        claims.put("prenom", user.getPrenom());
+        claims.put("phone", user.getPhone());
+        claims.put("adresse", user.getAdresse());
+        claims.put("bio", user.getBio());
+        claims.put("profileImage", user.getProfileImage());
+        claims.put("isOnline", user.getIsOnline());
+
+        if (user.getDatenaissance() != null) {
+            claims.put("dateNaissance", user.getDatenaissance().getTime());
+        }
+
+        return Jwts.builder()
+                .setSubject(user.getPhone() != null ? user.getPhone() : String.valueOf(user.getId()))
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(secretKey, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
 
 
     @SuppressWarnings("unchecked")
