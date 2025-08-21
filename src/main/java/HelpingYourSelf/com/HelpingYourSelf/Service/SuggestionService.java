@@ -2,9 +2,11 @@ package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.SuggestionResponse;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Interet;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Notification;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.NotificationType;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
+import HelpingYourSelf.com.HelpingYourSelf.Repository.MessageRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +14,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SuggestionService {
 
     private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
 
     @Autowired
     private NotificationService notificationService;
@@ -28,8 +33,14 @@ public class SuggestionService {
             return new ArrayList<>();
         }
 
+        List<Message> discussions = messageRepository.findBySenderIdOrReceiverId(currentUser.getId(), currentUser.getId());
+        Set<Long> utilisateursEnDiscussion = discussions.stream()
+                .map(m -> m.getSender().getId().equals(currentUser.getId()) ? m.getReceiver().getId() : m.getSender().getId())
+                .collect(Collectors.toSet());
+
         List<User> autres = userRepository.findAll().stream()
                 .filter(u -> !u.getId().equals(currentUser.getId()))
+                .filter(u -> !utilisateursEnDiscussion.contains(u.getId()))
                 .toList();
 
         List<SuggestionResponse> suggestions = new ArrayList<>();
