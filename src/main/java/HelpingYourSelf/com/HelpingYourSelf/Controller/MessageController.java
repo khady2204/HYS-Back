@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -69,10 +70,13 @@ public class MessageController {
                 .map(entry -> new DiscussionResponse(
                         new UserSummary(
                                 entry.getKey().getId(),
-                                entry.getKey().getPrenom(),
                                 entry.getKey().getNom(),
-                                entry.getKey().getProfileImage(),
-                                entry.getKey().getPhone()
+                                entry.getKey().getPrenom(),
+                                entry.getKey().getEmail(),
+                                entry.getKey().getPhone(),
+                                entry.getKey().getAdresse(),
+                                entry.getKey().getBio(),
+                                entry.getKey().getProfileImage()
                         ),
                         entry.getValue()
                 ))
@@ -81,19 +85,6 @@ public class MessageController {
         return ResponseEntity.ok(discussions);
     }
 
-    @PutMapping("/{messageId}/read")
-    public ResponseEntity<?> markAsRead(@AuthenticationPrincipal CustomUserDetails currentUserDetails,
-                                        @PathVariable Long messageId) {
-        if (currentUserDetails == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
-        }
 
-        try {
-            messageService.markMessageAsRead(messageId, currentUserDetails.getUser());
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
-    }
 
 }

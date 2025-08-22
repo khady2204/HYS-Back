@@ -95,6 +95,20 @@ public class User {
     @JsonIgnore
     private User gestionnaire;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_followers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private Set<User> followers = new HashSet<>();
+
+    @ManyToMany(mappedBy = "followers")
+    private Set<User> abonnements = new HashSet<>();
+
+
+
+
     private Instant createdAt;
 
     @ManyToOne
@@ -106,4 +120,9 @@ public class User {
     public void prePersist() {
         this.createdAt = Instant.now();
     }
+
+    public String getProfileImage() {
+        return profileImage != null ? "http://localhost:8081/uploads/" + profileImage : null;
+    }
+
 }

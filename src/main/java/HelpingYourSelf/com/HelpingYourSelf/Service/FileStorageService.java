@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.UUID;
 
 @Service
 public class FileStorageService {
@@ -14,11 +15,16 @@ public class FileStorageService {
     @Value("${upload.path}")
     private String uploadDir;
 
-    public String saveFile(MultipartFile file) throws IOException {
-        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path destination = Paths.get(uploadDir).resolve(filename);
-        Files.createDirectories(destination.getParent());
-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-        return "/uploads/" + filename;
+    public String saveProfileImage(MultipartFile file) {
+        try {
+            String uploadDir = "uploads/profiles/";
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, filename);
+            Files.createDirectories(filePath.getParent());
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/profiles/" + filename;
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de l'upload de la photo", e);
+        }
     }
 }
