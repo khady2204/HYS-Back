@@ -1,12 +1,25 @@
 package HelpingYourSelf.com.HelpingYourSelf.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 
+/**
+ * Lightweight representation of a {@link HelpingYourSelf.com.HelpingYourSelf.Entity.Message}
+ * returned to clients.  The explicit {@link JsonProperty} annotations guarantee
+ * that identifier fields are always serialised, allowing consumers to
+ * easily determine which user sent or received a particular message.
+ */
 public class MessageResponse {
 
     private Long id;
+
+    // Use snake_case to better align with frontend expectations
+    @JsonProperty("sender_id")
     private Long senderId;
+
+    @JsonProperty("receiver_id")
     private Long receiverId;
+
     private String content;
     private Instant timestamp;
     private String mediaUrl;
