@@ -32,7 +32,12 @@ public class Message {
     @JsonIgnore
     private User receiver;
 
-    @Column(nullable = false, length = 1000)
+    /**
+     * Textual content of the message.  This field used to be mandatory which
+     * prevented saving pure media messages (audio, image, etc.).  We mark it as
+     * optional so that a message can contain only a media file.
+     */
+    @Column(length = 1000)
     private String content;
 
     @Column(nullable = false)
