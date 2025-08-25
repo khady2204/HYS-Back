@@ -11,8 +11,11 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -161,10 +164,13 @@ public class AuthService {
         }
 
         user.setLastLoginIp(ip);
+        user.setIsOnline(true);
+        user.setLastOnlineAt(null);
         userRepo.save(user);
 
         return jwt.generateToken(user);
     }
+
 
     public void verifyResetOtp(VerifyOtpRequest req) {
         User user = userRepo.findByPhone(req.getPhone())
@@ -268,5 +274,8 @@ public class AuthService {
         return userRepo.findByPhone(phone)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
+
+
+
 
 }

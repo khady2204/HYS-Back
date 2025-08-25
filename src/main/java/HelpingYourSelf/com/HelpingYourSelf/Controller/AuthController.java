@@ -114,9 +114,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal(expression = "user") User user) {
-        user.setIsOnline(false);
-        userRepo.save(user);
-        return ResponseEntity.ok("Déconnexion réussie");
+        if (user != null) {
+            user.setIsOnline(false);
+            user.setLastOnlineAt(Instant.now());
+            userRepo.save(user);
+        }
+        return ResponseEntity.ok("Déconnecté avec succès.");
     }
 
 
