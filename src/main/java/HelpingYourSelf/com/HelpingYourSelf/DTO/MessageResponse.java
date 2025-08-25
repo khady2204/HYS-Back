@@ -13,10 +13,11 @@ public class MessageResponse {
 
     private Long id;
 
-    @JsonProperty("senderId")
+    // Use snake_case to better align with frontend expectations
+    @JsonProperty("sender_id")
     private Long senderId;
 
-    @JsonProperty("receiverId")
+    @JsonProperty("receiver_id")
     private Long receiverId;
 
     private String content;
