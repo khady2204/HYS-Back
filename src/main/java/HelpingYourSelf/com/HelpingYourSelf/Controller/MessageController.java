@@ -70,15 +70,27 @@ public class MessageController {
                 .map(entry -> new DiscussionResponse(
                         new UserSummary(
                                 entry.getKey().getId(),
-                                entry.getKey().getNom(),
                                 entry.getKey().getPrenom(),
+                                entry.getKey().getNom(),
                                 entry.getKey().getEmail(),
                                 entry.getKey().getPhone(),
                                 entry.getKey().getAdresse(),
                                 entry.getKey().getBio(),
                                 entry.getKey().getProfileImage()
                         ),
-                        entry.getValue()
+                        entry.getValue().stream()
+                                .map(m -> new MessageResponse(
+                                        m.getId(),
+                                        m.getSender().getId(),
+                                        m.getReceiver().getId(),
+                                        m.getContent(),
+                                        m.getTimestamp(),
+                                        m.getMediaUrl(),
+                                        m.getMediaType(),
+                                        m.getAudioDuration(),
+                                        m.isRead()
+                                ))
+                                .toList()
                 ))
                 .toList();
 
