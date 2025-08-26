@@ -24,6 +24,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -93,16 +98,26 @@ public class UserController {
         User user = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-        PublicUserDTO publicDTO = new PublicUserDTO(
+        ZoneId zone = ZoneId.of("Africa/Dakar");
+        String label = Boolean.TRUE.equals(user.getIsOnline())
+                ? null
+                : humanizeLastOnline(user.getLastOnlineAt(), zone);
+
+        PublicUserDTO dto = new PublicUserDTO(
                 user.getPrenom(),
                 user.getNom(),
                 user.getEmail(),
                 user.getAdresse(),
-                user.getProfileImage()
+                user.getProfileImage(),
+                Boolean.TRUE.equals(user.getIsOnline()),
+                user.getLastOnlineAt(),
+                label
         );
 
-        return ResponseEntity.ok(publicDTO);
+        return ResponseEntity.ok(dto);
     }
+
+
 
 
 
@@ -177,7 +192,7 @@ public class UserController {
             Path filePath = Paths.get(uploadDir, filename);
             Files.createDirectories(filePath.getParent());
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            // Chemin accessible côté front
+
             return "/uploads/profiles/" + filename;
         } catch (IOException e) {
             throw new RuntimeException("Erreur lors de l'upload de la photo", e);
@@ -217,6 +232,27 @@ public class UserController {
     public ResponseEntity<Set<User>> getMesAbonnements(@AuthenticationPrincipal(expression = "user") User user) {
         return ResponseEntity.ok(user.getAbonnements());
     }
+
+
+
+
+
+    private String humanizeLastOnline(Instant ts, ZoneId zone) {
+        if (ts == null) return null;
+        ZonedDateTime zdt = ts.atZone(zone);
+        LocalDate date = zdt.toLocalDate();
+        LocalDate today = LocalDate.now(zone);
+
+        if (date.equals(today)) {
+            return "Aujourd’hui " + zdt.toLocalTime().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
+        } else if (date.equals(today.minusDays(1))) {
+            return "Hier " + zdt.toLocalTime().truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
+        } else {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy 'à' HH:mm").withZone(zone);
+            return fmt.format(zdt);
+        }
+    }
+
 
 
 
