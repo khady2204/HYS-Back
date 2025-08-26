@@ -69,7 +69,7 @@ public class User {
     @Column(name = "last_online_at")
     private Instant lastOnlineAt;
 
-    // dernière activité vue par le backend (toute requête avec JWT valide)
+
     @Column(name = "last_activity_at")
     private Instant lastActivityAt;
 

@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Security;
 
+import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,12 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
             .cors(cors -> {})
             .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**").disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -70,6 +73,8 @@ public class SecurityConfig {
                     .requestMatchers("/ws-notifications/**", "/topic/**").permitAll()
 
                 .anyRequest().authenticated()
+
+
             )
             .oauth2Login(oauth -> oauth
                 .userInfoEndpoint(userInfo -> userInfo
@@ -78,15 +83,17 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/auth-success", true)
             )
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter(userRepository), UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(UserRepository userRepository) {
+        return new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService, userRepository);
     }
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
