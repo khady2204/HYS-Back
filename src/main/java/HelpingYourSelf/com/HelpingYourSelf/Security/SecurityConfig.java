@@ -33,7 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> {})
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**").disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
@@ -46,6 +46,9 @@ public class SecurityConfig {
                 // ✅ Routes publiques
                 .requestMatchers("/", "/login**", "/error", "/oauth2/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/ws/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/ws/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/ws/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/suggestions/**").permitAll()

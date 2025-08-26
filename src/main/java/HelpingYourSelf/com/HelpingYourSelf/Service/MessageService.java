@@ -43,7 +43,17 @@ public class MessageService {
         message.setTimestamp(Instant.now());
         message.setAudioDuration(request.getAudioDuration());
 
-        if (request.getMediaFile() != null && !request.getMediaFile().isEmpty()) {
+        // Ensure that a message contains at least text or a media file. Previously the
+        // service attempted to save messages without content which failed due to the
+        // database constraint. With the content field now optional, we explicitly
+        // prevent empty messages here.
+        boolean hasText = request.getContent() != null && !request.getContent().isBlank();
+        boolean hasMedia = request.getMediaFile() != null && !request.getMediaFile().isEmpty();
+        if (!hasText && !hasMedia) {
+            throw new RuntimeException("Message must contain text or media");
+        }
+
+        if (hasMedia) {
             try {
                 String uploadDir = System.getProperty("user.dir") + "/uploads";
                 Files.createDirectories(Paths.get(uploadDir));

@@ -1,5 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
+import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Message;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.MessageRepository;
@@ -15,8 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -31,11 +31,17 @@ public class MessageServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private MessageRepository messageRepo;
+
+    @Mock
+    private NotificationService notificationService;
+
     private MessageService messageService;
 
     @BeforeEach
     void setUp() {
-        messageService = new MessageService(messageRepository, userRepository);
+        messageService = new MessageService(messageRepository, userRepository, messageRepo, notificationService);
     }
 
     @Test
@@ -91,5 +97,23 @@ public class MessageServiceTest {
 
         assertTrue(message.isRead());
         verify(messageRepository).save(message);
+    }
+
+    @Test
+    void sendMessage_withoutContentAndMedia_throws() {
+        User sender = new User();
+        sender.setId(1L);
+        User receiver = new User();
+        receiver.setId(2L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(sender));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(receiver));
+
+        MessageRequest request = new MessageRequest();
+        request.setReceiverId(2L);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> messageService.sendMessage(sender, request));
+        assertEquals("Message must contain text or media", ex.getMessage());
     }
 }
