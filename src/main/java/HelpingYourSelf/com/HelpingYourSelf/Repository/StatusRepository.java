@@ -1,7 +1,9 @@
 package HelpingYourSelf.com.HelpingYourSelf.Repository;
 
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Status;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,5 +21,19 @@ public interface StatusRepository extends JpaRepository<Status, Long> {
            "WHERE s.expiresAt > :now AND s.user.id != :currentUserId")
     List<Status> findStatusesFromContacts(@Param("currentUserId") Long currentUserId, @Param("now") Instant now);
     
-    void deleteByExpiresAtBefore(Instant now);
+    /*void deleteByExpiresAtBefore(Instant now);*/
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Status s WHERE s.expiresAt < :now")
+    void deleteByExpiresAtBefore(@Param("now") Instant now);
+    List<Status> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    @Modifying
+    @Query("DELETE FROM Status s WHERE s.id = :statusId AND s.user.id = :userId")
+    int deleteByIdAndUserId(@Param("statusId") Long statusId, @Param("userId") Long userId);
+
+    List<Status> findByUserIdAndExpiresAtAfterOrderByCreatedAtDesc(
+            @Param("userId") Long userId,
+            @Param("now") Instant now
+    );
 }
