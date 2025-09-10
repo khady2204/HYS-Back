@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Service pour l'application Spring Boot
+  app:
+    build: .
+    container_name: helping-yourself-app
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/helpingyourself?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - CLOUDINARY_CLOUD_NAME=du7libmu5
+      - CLOUDINARY_API_KEY=835729119528394
+      - CLOUDINARY_API_SECRET=LkGcpDACPOONBo9sEb6fScZj5ag
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
+  # Service pour la base de données MySQL
+  db:
+    image: mysql:8.0
+    container_name: helping-yourself-db
+    environment:
+      MYSQL_DATABASE: helpingyourself
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+
+  # Service pour phpMyAdmin (facultatif mais utile pour la gestion de la base de données)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    ports:
+      - "8082:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_ARBITRARY=1
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
