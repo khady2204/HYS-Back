@@ -25,6 +25,7 @@ public class WebConfig {
 
                         .allowedOrigins(
                                 "http://localhost:4200",      // Angular dev
+                                "http://192.168.1.15:8100",
                                 "http://localhost:8100",      // Ionic dev
                                 "http://192.168.1.64:8100",   // PC réseau local
                                 "http://172.17.0.1:8100",     // Docker bridge
