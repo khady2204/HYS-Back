@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,23 @@ public class NotificationService {
     private final NotificationRepository notificationRepo;
     private final SimpMessagingTemplate messagingTemplate;
 
-    
+    @Transactional
+    public void notifierAbonnes(User emetteur, Set<User> destinataires, String message, NotificationType type) {
+        for (User destinataire : destinataires) {
+            // Ne pas notifier l'émetteur
+            if (!destinataire.getId().equals(emetteur.getId())) {
+                creerNotification(
+                        emetteur,
+                        destinataire,
+                        message,
+                        type,
+                        "/utilisateur/" + emetteur.getId()  // URL par défaut, à adapter selon vos besoins
+                );
+            }
+        }
+    }
+
+
     public Notification envoyerNotification(Notification notification) {
         notification.setDateEnvoi(Instant.now());
         Notification saved = notificationRepo.save(notification);
@@ -81,7 +99,8 @@ public class NotificationService {
     }
 
 
-    public Notification creerNotification(User emetteur, User destinataire, String message, NotificationType type, String cibleUrl) {
+    public NotificationDTO creerNotification(User emetteur, User destinataire,
+                                             String message, NotificationType type, String cibleUrl) {
         Notification notification = Notification.builder()
                 .emetteur(emetteur)
                 .destinataire(destinataire)
@@ -90,9 +109,8 @@ public class NotificationService {
                 .cibleUrl(cibleUrl)
                 .dateEnvoi(Instant.now())
                 .build();
-        return envoyerNotification(notification);
+        return mapToDTO(envoyerNotification(notification));
     }
-
 
     public NotificationDTO mapToDTO(Notification notification) {
         User emetteur = notification.getEmetteur();

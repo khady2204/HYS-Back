@@ -204,7 +204,7 @@ public class UserController {
     @PostMapping("/{id}/follow")
     public ResponseEntity<?> follow(@PathVariable Long id, @AuthenticationPrincipal(expression = "user") User user) {
         User toFollow = userRepo.findById(id).orElseThrow();
-        toFollow.getFollowers().add(user);
+        toFollow.getAbonnes().add(user);
         userRepo.save(toFollow);
         return ResponseEntity.ok("Abonnement réussi.");
     }
@@ -217,7 +217,7 @@ public class UserController {
         User toUnfollow = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-        toUnfollow.getFollowers().remove(user);
+        toUnfollow.getAbonnes().remove(user);
         userRepo.save(toUnfollow);
 
         return ResponseEntity.ok("Désabonnement réussi.");
@@ -225,7 +225,7 @@ public class UserController {
 
     @GetMapping("/followers")
     public ResponseEntity<Set<User>> getMesFollowers(@AuthenticationPrincipal(expression = "user") User user) {
-        return ResponseEntity.ok(user.getFollowers());
+        return ResponseEntity.ok(user.getAbonnes());
     }
 
     @GetMapping("/abonnements")

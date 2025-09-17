@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/commentaires")
 public class CommentaireController {
@@ -18,8 +20,11 @@ public class CommentaireController {
     @PostMapping("/{publicationId}/ajouter")
     public ResponseEntity<?> commenter(@AuthenticationPrincipal(expression = "user") User user,
                                        @PathVariable Long publicationId,
-                                       @RequestParam String contenu,
-                                       @RequestParam(required = false) Long parentId) {
+                                       @RequestBody Map<String, String> requestBody) {
+        String contenu = requestBody.get("contenu");
+        Long parentId = requestBody.get("parentId") != null ?
+                Long.parseLong(requestBody.get("parentId")) : null;
+
         return ResponseEntity.ok(commentaireService.commenter(user, publicationId, contenu, parentId));
     }
 

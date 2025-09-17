@@ -8,14 +8,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PublicationDTO {
+public class CommentaireResponse {
     private Long id;
-    private String texte;
+    private String contenu;
     private String auteurNom;
+    private Long auteurId;
     private Instant createdAt;
-    private int nombreCommentaires;
-    private int nombreLikes;
-    private int nombrePartages;
-    private List<MediaDTO> medias;
-    private List<CommentaireResponse> commentaires;
+    private int likesCount;
+    private List<CommentaireResponse> reponses;
 }
