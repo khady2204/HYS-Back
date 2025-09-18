@@ -27,7 +27,7 @@ import java.util.*;
 public class AuthService {
 
     private final UserRepository userRepo;
-    private final TwilioService sms;
+    private final SmsGatewayService smsGatewayService;
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwt;
 
@@ -61,6 +61,9 @@ public class AuthService {
         u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
 
         userRepo.save(u);
+        String message = "Votre code de vérification HelpingYourSelf est : " + code;
+        smsGatewayService.sendSms(req.getPhone(), message);
+
         System.out.println("[REGISTER] OTP envoyé au numéro " + req.getPhone() + " : " + code);
     }
 
@@ -79,6 +82,8 @@ public class AuthService {
         user.setOtp(code);
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
+        String message = "Votre code de vérification HelpingYourSelf est : " + code;
+        smsGatewayService.sendSms(req.getPhone(), message);
 
         System.out.println("[RESEND] Nouveau code OTP : " + code);
         return code;
@@ -112,6 +117,8 @@ public class AuthService {
         user.setOtp(otp);
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
+        String message = "Votre code de réinitialisation HelpingYourSelf est : " + otp;
+        smsGatewayService.sendSms(req.getPhone(), message);
 
         System.out.println("[TEST] OTP reset : " + otp);
         return otp;

@@ -95,6 +95,12 @@
             <version>9.3.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sns</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
         <!-- Lombok & JPA -->
         <dependency>
             <groupId>org.projectlombok</groupId>
