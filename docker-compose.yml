@@ -8,7 +8,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://helpingyourself.c5gs4246owpo.af-south-1.rds.amazonaws.com:3306/helpingyourself?useSSL=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://helpingyourself.c5gs4246owpo.af-south-1.rds.amazonaws.com:3306/helpingyourself?useSSL=true&serverTimezone=UTC&createDatabaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=Mkha2025!Rds#
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
