@@ -10,6 +10,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.InteretRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
+import HelpingYourSelf.com.HelpingYourSelf.Service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,6 +43,7 @@ public class UserController {
     private final UserRepository userRepo;
     private final InteretRepository interetRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final S3Service s3Service;
 
     //  Liste des utilisateurs
     @GetMapping("/list")
@@ -119,8 +121,6 @@ public class UserController {
 
 
 
-
-
     //  Lister les utilisateurs connectés (isOnline = true)
     @GetMapping("/online")
     public ResponseEntity<?> getOnlineUsers() {
@@ -154,7 +154,7 @@ public class UserController {
         if (bio != null) currentUser.setBio(bio);
 
         if (profileImage != null && !profileImage.isEmpty()) {
-            String imageUrl = saveProfileImage(profileImage);
+            String imageUrl = s3Service.uploadProfileImage(profileImage);
             currentUser.setProfileImage(imageUrl);
         }
 
@@ -180,23 +180,6 @@ public class UserController {
         );
 
         return ResponseEntity.ok(new UpdateProfileResponse(newToken, summary));
-    }
-
-
-
-
-    private String saveProfileImage(MultipartFile file) {
-        try {
-            String uploadDir = "uploads/profiles/";
-            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, filename);
-            Files.createDirectories(filePath.getParent());
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            return "/uploads/profiles/" + filename;
-        } catch (IOException e) {
-            throw new RuntimeException("Erreur lors de l'upload de la photo", e);
-        }
     }
 
 

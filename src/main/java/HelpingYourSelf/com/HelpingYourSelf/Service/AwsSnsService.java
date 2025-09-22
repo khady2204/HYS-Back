@@ -6,22 +6,35 @@ import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sns.model.SnsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.regions.Region;
 
 import java.util.Map;
 
 @Service
 public class AwsSnsService {
+
     @Value("${aws.sms.enabled:false}")
     private boolean awsSmsEnabled;
+
+    @Value("${aws.region:af-south-1}") // Ajoutez cette ligne
+    private String awsRegion;
 
     private final SnsClient snsClient;
 
     public AwsSnsService() {
-        this.snsClient = SnsClient.create(); // Auto-configure avec IAM Role
+        if (awsSmsEnabled) {
+            // Initialise seulement si SMS est activé
+            this.snsClient = SnsClient.builder()
+                    .region(Region.of(awsRegion)) // Spécifie la région
+                    .build();
+        } else {
+            this.snsClient = null;
+            System.out.println("AWS SNS désactivé - mode simulation");
+        }
     }
 
     public void sendSms(String to, String message) {
-        if (!awsSmsEnabled) {
+        if (!awsSmsEnabled || snsClient == null) {
             System.out.println("[AWS SMS SIMULÉ] à " + to + " : " + message);
             return;
         }

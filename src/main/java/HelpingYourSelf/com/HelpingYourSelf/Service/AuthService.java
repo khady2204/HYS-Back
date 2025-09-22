@@ -8,14 +8,11 @@ import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -27,7 +24,7 @@ import java.util.*;
 public class AuthService {
 
     private final UserRepository userRepo;
-    private final SmsGatewayService smsGatewayService;
+    private final EmailService emailService;
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwt;
 
@@ -61,15 +58,14 @@ public class AuthService {
         u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
 
         userRepo.save(u);
-        String message = "Votre code de vérification HelpingYourSelf est : " + code;
-        smsGatewayService.sendSms(req.getPhone(), message);
+        emailService.sendOtpEmail(req.getEmail(), code, "l'activation de votre compte");
 
-        System.out.println("[REGISTER] OTP envoyé au numéro " + req.getPhone() + " : " + code);
+        System.out.println("[REGISTER] OTP envoyé à l'email " + req.getEmail() + " : " + code);
     }
 
     public String sendOtp(OtpLoginRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Numéro non trouvé"));
+        User user = userRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email non trouvé"));
 
         if (user.getOtpExpiration() != null && user.getOtpExpiration().isAfter(Instant.now())) {
             Duration reste = Duration.between(Instant.now(), user.getOtpExpiration());
@@ -83,15 +79,16 @@ public class AuthService {
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
         String message = "Votre code de vérification HelpingYourSelf est : " + code;
-        smsGatewayService.sendSms(req.getPhone(), message);
+        emailService.sendOtpEmail(user.getEmail(), code, "la connexion à votre compte");
 
-        System.out.println("[RESEND] Nouveau code OTP : " + code);
+        System.out.println("[RESEND] Nouveau code OTP envoyé à : " + user.getEmail());
         return code;
     }
 
     public String verifyOtp(OtpVerifyRequest req, String ip) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Invalide"));
+        // CHANGEMENT : Recherche par EMAIL au lieu de téléphone
+        User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         if (user.getOtp() == null || !user.getOtp().equals(req.getOtp()))
             throw new RuntimeException("OTP incorrect");
@@ -110,17 +107,17 @@ public class AuthService {
     }
 
     public String sendResetOtp(ResetRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Numéro introuvable"));
+        User user = userRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email introuvable"));
 
         String otp = String.valueOf(new Random().nextInt(899999) + 100000);
         user.setOtp(otp);
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
         String message = "Votre code de réinitialisation HelpingYourSelf est : " + otp;
-        smsGatewayService.sendSms(req.getPhone(), message);
+        emailService.sendOtpEmail(user.getEmail(), otp, "la réinitialisation de votre mot de passe");
 
-        System.out.println("[TEST] OTP reset : " + otp);
+        System.out.println("[RESET] OTP envoyé à : " + user.getEmail());
         return otp;
     }
 
@@ -180,7 +177,8 @@ public class AuthService {
 
 
     public void verifyResetOtp(VerifyOtpRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
+        // CHANGEMENT : Recherche par EMAIL au lieu de téléphone
+        User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
         if (user.getOtpLockUntil() != null && user.getOtpLockUntil().isAfter(Instant.now())) {
@@ -241,9 +239,9 @@ public class AuthService {
     public String processGoogleToken(String idTokenString) throws Exception {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance()
+                new GsonFactory() // Utilisez GsonFactory au lieu de JacksonFactory
         )
-                .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com")) // Ton client ID
+                .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com"))
                 .build();
 
         GoogleIdToken idToken = verifier.verify(idTokenString);
@@ -264,7 +262,6 @@ public class AuthService {
                 return newUser;
             });
 
-            // Générer un JWT et le stocker
             String token = jwt.generateToken(user);
             user.setToken(token);
             userRepo.save(user);
