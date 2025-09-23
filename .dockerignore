@@ -1,4 +1,5 @@
 # Ignorer les fichiers et dossiers inutiles pour la construction Docker
+.env
 .git
 .gitignore
 .idea
