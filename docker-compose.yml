@@ -17,6 +17,11 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - JWT_SECRET=${JWT_SECRET}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SPRING_MAIL_HOST=email-smtp.us-east-1.amazonaws.com
+      - SPRING_MAIL_PORT=587
+      - SPRING_MAIL_USERNAME=AKIAU3YFN5RRYS6HY4BJ
+      - SPRING_MAIL_PASSWORD=+LaVJnJaI5Tnk05DXEHCLc6cDQ2Qi/aIPowkSfZbbyk=
+      - APP_EMAIL_FROM=no-reply@hysinternational.com
 
     volumes:
       - ./uploads:/app/uploads
