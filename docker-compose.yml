@@ -15,6 +15,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=Mkha2025!Rds#
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_PROFILES_ACTIVE=prod
+      - AWS_S3_REGION=af-south-1
       - JWT_SECRET=${JWT_SECRET}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SPRING_MAIL_HOST=email-smtp.us-east-1.amazonaws.com
