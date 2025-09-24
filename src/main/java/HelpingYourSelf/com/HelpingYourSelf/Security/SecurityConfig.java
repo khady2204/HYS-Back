@@ -72,12 +72,12 @@ public class SecurityConfig {
 
                 .anyRequest().authenticated()
             )
-            .oauth2Login(oauth -> oauth
-                .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService)
-                )
-                .defaultSuccessUrl("/auth-success", true)
-            )
+                //.oauth2Login(oauth -> oauth
+                //.userInfoEndpoint(userInfo -> userInfo
+        //.userService(customOAuth2UserService)
+                //)
+                //.defaultSuccessUrl("/auth-success", true)
+                    // )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
