@@ -11,11 +11,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.*;
+
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class PublicationService {
