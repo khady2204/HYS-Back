@@ -12,7 +12,7 @@ public class EmailService {
 
     public void sendOtpEmail(String toEmail, String otpCode, String purpose) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("no-reply@helpingyourself.com");
+        message.setFrom("no-reply@hysinternational.com");
         message.setTo(toEmail);
         message.setSubject("Votre code de vérification - HelpingYourSelf");
 
