@@ -23,4 +23,4 @@ RUN mkdir -p /app/uploads
 EXPOSE 8080
 
 # Commande de démarrage
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "-Dspring.profiles.active=prod"]
