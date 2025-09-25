@@ -128,8 +128,9 @@ public class PublicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Commentaire> getCommentaires(Long publicationId) {
-        return commentaireRepo.findByPublicationIdAndParentIsNull(publicationId);
+    public List<CommentaireResponse> getCommentaires(Long publicationId) {
+        List<Commentaire> commentaires = commentaireRepo.findByPublicationIdAndParentIsNull(publicationId);
+        return mapCommentairesToResponse(commentaires);
     }
 
     @Transactional
