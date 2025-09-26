@@ -15,11 +15,6 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - AWS_S3_REGION=af-south-1
       - JWT_SECRET=${JWT_SECRET}
-      - SPRING_MAIL_HOST=email-smtp.us-east-1.amazonaws.com
-      - SPRING_MAIL_PORT=587
-      - SPRING_MAIL_USERNAME=AKIAU3YFN5RR3IIBUJ66
-      - SPRING_MAIL_PASSWORD=BIee9bOYqG5L4Vp+z/eLOs3BPk7BXaIjZHb3iJQ7Wd97
-      - APP_EMAIL_FROM=no-reply@hysinternational.com
 
     volumes:
       - ./uploads:/app/uploads
