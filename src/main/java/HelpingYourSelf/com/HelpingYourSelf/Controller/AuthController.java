@@ -8,6 +8,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,9 +19,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -32,6 +31,7 @@ public class AuthController {
     private final UserRepository userRepo;
     private final UserService userService;
     private final JavaMailSender javaMailSender;
+    private final Environment environment;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -125,30 +125,50 @@ public class AuthController {
         return ResponseEntity.ok("Déconnecté avec succès.");
     }
 
-    // AJOUTEZ CETTE MÉTHODE DE DEBUG
-    @GetMapping("/debug-smtp")
-    public ResponseEntity<?> debugSmtp() {
+    @GetMapping("/debug-mail-config")
+    public Map<String, String> debugMailConfig() {
+        return Map.of(
+                "spring.mail.host", environment.getProperty("spring.mail.host", "non défini"),
+                "spring.mail.username", environment.getProperty("spring.mail.username", "non défini"),
+                "spring.mail.from", environment.getProperty("spring.mail.from", "non défini"),
+                "app.email.from", environment.getProperty("app.email.from", "non défini"),
+                "java.version", System.getProperty("java.version"),
+                "activeProfiles", String.join(", ", environment.getActiveProfiles())
+        );
+    }
+
+    @GetMapping("/debug-smtp-detail")
+    public ResponseEntity<?> debugSmtpDetail() {
         try {
-            System.out.println("=== SMTP DEBUG START ===");
-            System.out.println("Testing SMTP configuration...");
+            Map<String, String> config = new HashMap<>();
+            config.put("mail.host", environment.getProperty("spring.mail.host"));
+            config.put("mail.from", environment.getProperty("spring.mail.from"));
+            config.put("app.email.from", environment.getProperty("app.email.from"));
 
             SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(environment.getProperty("spring.mail.from", "default@example.com"));
             message.setTo("segnanelaye@gmail.com");
-            message.setSubject("SMTP Debug Test - " + new java.util.Date());
-            message.setText("This is a test email from your Spring Boot application.\n\n" +
-                    "If you receive this, SMTP is working correctly!");
+            message.setSubject("Debug SMTP - " + new Date());
+            message.setText("Configuration: " + config.toString());
 
             javaMailSender.send(message);
-            System.out.println("=== SMTP DEBUG SUCCESS ===");
-
-            return ResponseEntity.ok("SMTP TEST: Email sent successfully to segnanelaye@gmail.com");
+            return ResponseEntity.ok("Email envoyé avec config: " + config);
 
         } catch (Exception e) {
-            System.out.println("=== SMTP DEBUG ERROR ===");
-            e.printStackTrace();
             return ResponseEntity.status(500)
-                    .body("SMTP TEST ERROR: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                    .body("Erreur: " + e.getMessage() + "\nConfig: " + getMailConfig());
         }
+    }
+
+    private Map<String, String> getMailConfig() {
+        Map<String, String> config = new HashMap<>();
+        for (String key : Arrays.asList(
+                "spring.mail.host", "spring.mail.port", "spring.mail.username",
+                "spring.mail.from", "app.email.from", "spring.profiles.active"
+        )) {
+            config.put(key, environment.getProperty(key, "non défini"));
+        }
+        return config;
     }
 
 }
