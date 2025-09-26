@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
@@ -29,6 +31,7 @@ public class AuthController {
     private final AuthService auth;
     private final UserRepository userRepo;
     private final UserService userService;
+    private final JavaMailSender javaMailSender;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -122,5 +125,30 @@ public class AuthController {
         return ResponseEntity.ok("Déconnecté avec succès.");
     }
 
+    // AJOUTEZ CETTE MÉTHODE DE DEBUG
+    @GetMapping("/debug-smtp")
+    public ResponseEntity<?> debugSmtp() {
+        try {
+            System.out.println("=== SMTP DEBUG START ===");
+            System.out.println("Testing SMTP configuration...");
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("segnanelaye@gmail.com");
+            message.setSubject("SMTP Debug Test - " + new java.util.Date());
+            message.setText("This is a test email from your Spring Boot application.\n\n" +
+                    "If you receive this, SMTP is working correctly!");
+
+            javaMailSender.send(message);
+            System.out.println("=== SMTP DEBUG SUCCESS ===");
+
+            return ResponseEntity.ok("SMTP TEST: Email sent successfully to segnanelaye@gmail.com");
+
+        } catch (Exception e) {
+            System.out.println("=== SMTP DEBUG ERROR ===");
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body("SMTP TEST ERROR: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
+    }
 
 }
