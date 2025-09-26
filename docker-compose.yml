@@ -8,7 +8,21 @@ services:
       - "8080:8080"
     env_file :
       - .env
-
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://helpingyourself.c5gs4246owpo.af-south-1.rds.amazonaws.com:3306/helpingyourself?useSSL=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=Mkha2025!Rds#
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_PROFILES_ACTIVE=prod
+      - AWS_S3_REGION=af-south-1
+      - JWT_SECRET=${JWT_SECRET}
+      - SPRING_MAIL_HOST=email-smtp.us-east-1.amazonaws.com
+      - SPRING_MAIL_PORT=587
+      - SPRING_MAIL_USERNAME=AKIAU3YFN5RR3IIBUJ66
+      - SPRING_MAIL_PASSWORD=BIee9bOYqG5L4Vp+z/eLOs3BPk7BXaIjZHb3iJQ7Wd97
+      - SPRING_MAIL_FROM=segnanelaye@gmail.com
+      - APP_EMAIL_FROM=segnanelaye@gmail.com
+      - AWS.REGION=af-south-1
 
     volumes:
       - ./uploads:/app/uploads
