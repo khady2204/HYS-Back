@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -236,15 +238,25 @@ public class AuthService {
         userRepo.save(user);
     }
 
-    public String processGoogleToken(String idTokenString) throws Exception {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                new GsonFactory() // Utilisez GsonFactory au lieu de JacksonFactory
-        )
-                .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com"))
-                .build();
+    public String processGoogleToken(String idTokenString) {
+        GoogleIdTokenVerifier verifier;
+        try {
+            verifier = new GoogleIdTokenVerifier.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    new GsonFactory() // Utilisez GsonFactory au lieu de JacksonFactory
+            )
+                    .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com"))
+                    .build();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("Erreur lors de l'initialisation de la vérification Google", e);
+        }
 
-        GoogleIdToken idToken = verifier.verify(idTokenString);
+        GoogleIdToken idToken;
+        try {
+            idToken = verifier.verify(idTokenString);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("La vérification du token Google a échoué", e);
+        }
 
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
