@@ -262,7 +262,12 @@ public class AuthService {
                 return newUser;
             });
 
-            String token = jwt.generateToken(user);
+            // S'assurer que l'utilisateur dispose d'un identifiant avant de générer le token JWT
+            if (user.getId() == null) {
+                user = userRepo.save(user);
+            }
+
+            String token = jwt.generateTokenFromUser(user);
             user.setToken(token);
             userRepo.save(user);
 
@@ -274,9 +279,28 @@ public class AuthService {
 
     public User getCurrentUser(HttpServletRequest request) {
         String token = jwt.resolveToken(request);
-        String phone = jwt.getSubjectFromToken(token);
-        return userRepo.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        String subject = jwt.getSubjectFromToken(token);
+
+        if (subject == null) {
+            throw new RuntimeException("Token invalide");
+        }
+
+        Optional<User> user = userRepo.findByPhone(subject);
+
+        if (user.isEmpty()) {
+            try {
+                Long userId = Long.parseLong(subject);
+                user = userRepo.findById(userId);
+            } catch (NumberFormatException ignored) {
+                // Le subject n'est pas un identifiant numérique
+            }
+        }
+
+        if (user.isEmpty()) {
+            user = userRepo.findByEmail(subject);
+        }
+
+        return user.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
 
 
