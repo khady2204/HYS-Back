@@ -8,12 +8,14 @@ import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -24,7 +26,7 @@ import java.util.*;
 public class AuthService {
 
     private final UserRepository userRepo;
-    private final TwilioService sms;
+    private final EmailService emailService;
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwt;
 
@@ -58,12 +60,14 @@ public class AuthService {
         u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
 
         userRepo.save(u);
-        System.out.println("[REGISTER] OTP envoyé au numéro " + req.getPhone() + " : " + code);
+        emailService.sendOtpEmail(req.getEmail(), code, "l'activation de votre compte");
+
+        System.out.println("[REGISTER] OTP envoyé à l'email " + req.getEmail() + " : " + code);
     }
 
     public String sendOtp(OtpLoginRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Numéro non trouvé"));
+        User user = userRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email non trouvé"));
 
         if (user.getOtpExpiration() != null && user.getOtpExpiration().isAfter(Instant.now())) {
             Duration reste = Duration.between(Instant.now(), user.getOtpExpiration());
@@ -76,14 +80,17 @@ public class AuthService {
         user.setOtp(code);
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
+        String message = "Votre code de vérification HelpingYourSelf est : " + code;
+        emailService.sendOtpEmail(user.getEmail(), code, "la connexion à votre compte");
 
-        System.out.println("[RESEND] Nouveau code OTP : " + code);
+        System.out.println("[RESEND] Nouveau code OTP envoyé à : " + user.getEmail());
         return code;
     }
 
     public String verifyOtp(OtpVerifyRequest req, String ip) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Invalide"));
+        // CHANGEMENT : Recherche par EMAIL au lieu de téléphone
+        User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         if (user.getOtp() == null || !user.getOtp().equals(req.getOtp()))
             throw new RuntimeException("OTP incorrect");
@@ -102,15 +109,17 @@ public class AuthService {
     }
 
     public String sendResetOtp(ResetRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Numéro introuvable"));
+        User user = userRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email introuvable"));
 
         String otp = String.valueOf(new Random().nextInt(899999) + 100000);
         user.setOtp(otp);
         user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
         userRepo.save(user);
+        String message = "Votre code de réinitialisation HelpingYourSelf est : " + otp;
+        emailService.sendOtpEmail(user.getEmail(), otp, "la réinitialisation de votre mot de passe");
 
-        System.out.println("[TEST] OTP reset : " + otp);
+        System.out.println("[RESET] OTP envoyé à : " + user.getEmail());
         return otp;
     }
 
@@ -161,13 +170,17 @@ public class AuthService {
         }
 
         user.setLastLoginIp(ip);
+        user.setIsOnline(true);
+        user.setLastOnlineAt(null);
         userRepo.save(user);
 
         return jwt.generateToken(user);
     }
 
+
     public void verifyResetOtp(VerifyOtpRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
+        // CHANGEMENT : Recherche par EMAIL au lieu de téléphone
+        User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
         if (user.getOtpLockUntil() != null && user.getOtpLockUntil().isAfter(Instant.now())) {
@@ -225,15 +238,25 @@ public class AuthService {
         userRepo.save(user);
     }
 
-    public String processGoogleToken(String idTokenString) throws Exception {
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance()
-        )
-                .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com")) // Ton client ID
-                .build();
+    public String processGoogleToken(String idTokenString) {
+        GoogleIdTokenVerifier verifier;
+        try {
+            verifier = new GoogleIdTokenVerifier.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    new GsonFactory() // Utilisez GsonFactory au lieu de JacksonFactory
+            )
+                    .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com"))
+                    .build();
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("Erreur lors de l'initialisation de la vérification Google", e);
+        }
 
-        GoogleIdToken idToken = verifier.verify(idTokenString);
+        GoogleIdToken idToken;
+        try {
+            idToken = verifier.verify(idTokenString);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new RuntimeException("La vérification du token Google a échoué", e);
+        }
 
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
@@ -251,8 +274,12 @@ public class AuthService {
                 return newUser;
             });
 
-            // Générer un JWT et le stocker
-            String token = jwt.generateToken(user);
+            // S'assurer que l'utilisateur dispose d'un identifiant avant de générer le token JWT
+            if (user.getId() == null) {
+                user = userRepo.save(user);
+            }
+
+            String token = jwt.generateTokenFromUser(user);
             user.setToken(token);
             userRepo.save(user);
 
@@ -264,9 +291,31 @@ public class AuthService {
 
     public User getCurrentUser(HttpServletRequest request) {
         String token = jwt.resolveToken(request);
-        String phone = jwt.getSubjectFromToken(token);
-        return userRepo.findByPhone(phone)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        String subject = jwt.getSubjectFromToken(token);
+
+        if (subject == null) {
+            throw new RuntimeException("Token invalide");
+        }
+
+        Optional<User> user = userRepo.findByPhone(subject);
+
+        if (user.isEmpty()) {
+            try {
+                Long userId = Long.parseLong(subject);
+                user = userRepo.findById(userId);
+            } catch (NumberFormatException ignored) {
+                // Le subject n'est pas un identifiant numérique
+            }
+        }
+
+        if (user.isEmpty()) {
+            user = userRepo.findByEmail(subject);
+        }
+
+        return user.orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
+
+
+
 
 }

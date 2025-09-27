@@ -25,7 +25,7 @@ public class NotificationService {
         notification.setDateEnvoi(Instant.now());
         Notification saved = notificationRepo.save(notification);
 
-        // 🔔 Envoi en temps réel via WebSocket
+        // Envoi en temps réel via WebSocket
         messagingTemplate.convertAndSend("/topic/notifications/" + notification.getDestinataire().getId(), mapToDTO(saved));
         return saved;
     }

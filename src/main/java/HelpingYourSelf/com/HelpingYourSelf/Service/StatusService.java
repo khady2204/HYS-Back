@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,39 +24,24 @@ public class StatusService {
 
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
-    private final CloudinaryService cloudinaryService;
+    private final S3Service s3Service;
 
-/*    @Transactional
-    public StatusDTO createStatus(Long userId, String text, MultipartFile[] files) throws IOException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-
-        Status status = Status.builder()
-                .user(user)
-                .text(text)
-                .build();
-
-        if (files != null && files.length > 0) {
-            List<String> mediaUrls = cloudinaryService.uploadFiles(files);
-            status.setMediaUrls(mediaUrls);
-        }
-
-        status = statusRepository.save(status);
-        return convertToDTO(status);
-    }*/
 @Transactional
 public StatusDTO createStatus(Long userId, String text, MultipartFile[] files) throws IOException {
     User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID: " + userId));
 
-    // Le reste du code reste inchangé
     Status status = Status.builder()
             .user(user)
             .text(text)
             .build();
 
     if (files != null && files.length > 0) {
-        List<String> mediaUrls = cloudinaryService.uploadFiles(files);
+        List<String> mediaUrls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String mediaUrl = s3Service.uploadStatusMedia(file); // ← Utilise S3 maintenant
+            mediaUrls.add(mediaUrl);
+        }
         status.setMediaUrls(mediaUrls);
     }
 
@@ -63,21 +49,45 @@ public StatusDTO createStatus(Long userId, String text, MultipartFile[] files) t
     return convertToDTO(status);
 }
 
-    public List<StatusDTO> getStatusesForUser(Long currentUserId) {
+/*    public List<StatusDTO> getStatusesForUser(Long currentUserId) {
         Instant now = Instant.now();
         List<Status> statuses = statusRepository.findStatusesFromContacts(currentUserId, now);
         return statuses.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
+@Transactional
+public List<StatusDTO> getStatusesForUser(Long currentUserId) {
+    Instant now = Instant.now();
+    // Supprimer d'abord les statuts expirés
+    statusRepository.deleteByExpiresAtBefore(now);
 
-    public List<StatusDTO> getUserStatuses(Long userId) {
+    // Récupérer uniquement les statuts non expirés
+    List<Status> statuses = statusRepository.findStatusesFromContacts(currentUserId, now);
+    return statuses.stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
+
+/*    public List<StatusDTO> getUserStatuses(Long userId) {
         Instant now = Instant.now();
         List<Status> statuses = statusRepository.findActiveStatusesByUser(userId, now);
         return statuses.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-    }
+    }*/
+@Transactional
+public List<StatusDTO> getUserStatuses(Long userId) {
+    Instant now = Instant.now();
+    // Supprimer d'abord les statuts expirés
+    statusRepository.deleteByExpiresAtBefore(now);
+
+    // Récupérer uniquement les statuts non expirés
+    List<Status> statuses = statusRepository.findActiveStatusesByUser(userId, now);
+    return statuses.stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
 
     private StatusDTO convertToDTO(Status status) {
         long hoursLeft = Duration.between(Instant.now(), status.getExpiresAt()).toHours();
@@ -99,5 +109,33 @@ public StatusDTO createStatus(Long userId, String text, MultipartFile[] files) t
     @Transactional
     public void deleteExpiredStatuses() {
         statusRepository.deleteByExpiresAtBefore(Instant.now());
+    }
+/*    public List<StatusDTO> getMyStatuses(Long userId) {
+        List<Status> statuses = statusRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        return statuses.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }*/
+@Transactional
+public List<StatusDTO> getMyStatuses(Long userId) {
+    // Supprimer d'abord les statuts expirés
+    statusRepository.deleteByExpiresAtBefore(Instant.now());
+
+    // Récupérer uniquement les statuts non expirés
+    List<Status> statuses = statusRepository.findByUserIdAndExpiresAtAfterOrderByCreatedAtDesc(
+            userId,
+            Instant.now()
+    );
+    return statuses.stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+}
+
+    @Transactional
+    public void deleteMyStatus(Long statusId, Long userId) {
+        int deleted = statusRepository.deleteByIdAndUserId(statusId, userId);
+        if (deleted == 0) {
+            throw new RuntimeException("Statut non trouvé ou vous n'êtes pas autorisé à le supprimer");
+        }
     }
 }

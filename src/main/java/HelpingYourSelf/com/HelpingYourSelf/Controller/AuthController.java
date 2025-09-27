@@ -8,7 +8,10 @@ import HelpingYourSelf.com.HelpingYourSelf.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.LoginRequest;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
@@ -16,11 +19,9 @@ import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-@CrossOrigin(origins = "http://localhost:8100")
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -29,6 +30,8 @@ public class AuthController {
     private final AuthService auth;
     private final UserRepository userRepo;
     private final UserService userService;
+    private final JavaMailSender javaMailSender;
+    private final Environment environment;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -75,6 +78,16 @@ public class AuthController {
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
+        String idToken = payload.get("idToken");
+        try {
+            String token = auth.processGoogleToken(idToken);
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
 
 
 
@@ -114,10 +127,58 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal(expression = "user") User user) {
-        user.setIsOnline(false);
-        userRepo.save(user);
-        return ResponseEntity.ok("Déconnexion réussie");
+        if (user != null) {
+            user.setIsOnline(false);
+            user.setLastOnlineAt(Instant.now());
+            userRepo.save(user);
+        }
+        return ResponseEntity.ok("Déconnecté avec succès.");
     }
 
+    @GetMapping("/debug-mail-config")
+    public Map<String, String> debugMailConfig() {
+        return Map.of(
+                "spring.mail.host", environment.getProperty("spring.mail.host", "non défini"),
+                "spring.mail.username", environment.getProperty("spring.mail.username", "non défini"),
+                "spring.mail.from", environment.getProperty("spring.mail.from", "non défini"),
+                "app.email.from", environment.getProperty("app.email.from", "non défini"),
+                "java.version", System.getProperty("java.version"),
+                "activeProfiles", String.join(", ", environment.getActiveProfiles())
+        );
+    }
+
+    @GetMapping("/debug-smtp-detail")
+    public ResponseEntity<?> debugSmtpDetail() {
+        try {
+            Map<String, String> config = new HashMap<>();
+            config.put("mail.host", environment.getProperty("spring.mail.host"));
+            config.put("mail.from", environment.getProperty("spring.mail.from"));
+            config.put("app.email.from", environment.getProperty("app.email.from"));
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(environment.getProperty("spring.mail.from", "default@example.com"));
+            message.setTo("segnanelaye@gmail.com");
+            message.setSubject("Debug SMTP - " + new Date());
+            message.setText("Configuration: " + config.toString());
+
+            javaMailSender.send(message);
+            return ResponseEntity.ok("Email envoyé avec config: " + config);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body("Erreur: " + e.getMessage() + "\nConfig: " + getMailConfig());
+        }
+    }
+
+    private Map<String, String> getMailConfig() {
+        Map<String, String> config = new HashMap<>();
+        for (String key : Arrays.asList(
+                "spring.mail.host", "spring.mail.port", "spring.mail.username",
+                "spring.mail.from", "app.email.from", "spring.profiles.active"
+        )) {
+            config.put(key, environment.getProperty(key, "non défini"));
+        }
+        return config;
+    }
 
 }

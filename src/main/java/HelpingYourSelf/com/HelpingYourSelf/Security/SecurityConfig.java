@@ -29,12 +29,13 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomUserDetailsService customUserDetailsService;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> {})
             .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**").disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .exceptionHandling(exceptions -> exceptions
@@ -56,12 +57,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/interets/user").permitAll() // Autoriser le nouvel endpoint POST
                 .requestMatchers(HttpMethod.GET, "/api/interets/user/actuel").hasAuthority("ROLE_USER") // Autoriser le nouvel endpoint GET
 
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
 
                 .requestMatchers("/api/superadmin/**").hasAuthority("ROLE_SUPERADMIN")
                 .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_GESTIONNAIRE")
                 .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_GESTIONNAIRE")
                 .requestMatchers("/api/messages/**").hasAuthority("ROLE_USER")
                 .requestMatchers(HttpMethod.POST, "/api/users/*/interets/*").hasAuthority("ROLE_USER")
+
+
 
                     .requestMatchers("/ws-notifications/**", "/topic/**").permitAll()
 
@@ -101,4 +106,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
+

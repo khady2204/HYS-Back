@@ -78,4 +78,31 @@ public ResponseEntity<?> createStatus(
         List<StatusDTO> statuses = statusService.getUserStatuses(userId);
         return ResponseEntity.ok(statuses);
     }
+    @GetMapping("/me")
+    @Operation(summary = "Obtenir mes statuts",
+            description = "Récupère tous les statuts de l'utilisateur connecté")
+    @ApiResponse(responseCode = "200", description = "Statuts récupérés avec succès",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = StatusDTO.class))))
+    public ResponseEntity<List<StatusDTO>> getMyStatuses() {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        List<StatusDTO> statuses = statusService.getMyStatuses(currentUserId);
+        return ResponseEntity.ok(statuses);
+    }
+
+    @DeleteMapping("/{statusId}")
+    @Operation(summary = "Supprimer un statut",
+            description = "Permet à un utilisateur de supprimer son propre statut")
+    @ApiResponse(responseCode = "200", description = "Statut supprimé avec succès")
+    @ApiResponse(responseCode = "403", description = "Non autorisé à supprimer ce statut")
+    @ApiResponse(responseCode = "404", description = "Statut non trouvé")
+    public ResponseEntity<?> deleteStatus(@PathVariable Long statusId) {
+        try {
+            Long currentUserId = SecurityUtils.getCurrentUserId();
+            statusService.deleteMyStatus(statusId, currentUserId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
 }

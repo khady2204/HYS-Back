@@ -57,15 +57,22 @@ public class User {
     private Boolean isOtpVerified = false;
 
 
-    private String lastLoginIp;
+
     private String deviceInfo;
+
+    @Column(name = "last_login_ip")
+    private String lastLoginIp;
 
     @Column(name = "is_online")
     private Boolean isOnline = false;
 
-
     @Column(name = "last_online_at")
     private Instant lastOnlineAt;
+
+    // dernière activité vue par le backend (toute requête avec JWT valide)
+    @Column(name = "last_activity_at")
+    private Instant lastActivityAt;
+
 
     @Column(length = 500)
     private String token;
