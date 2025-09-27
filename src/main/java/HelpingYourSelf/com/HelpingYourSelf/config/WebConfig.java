@@ -31,7 +31,9 @@ public class WebConfig {
                                 "http://172.19.0.1:8100",     // Docker autre réseau
                                 "capacitor://localhost",      // Capacitor mobile
                                 "ionic://localhost",          // Ionic mobile
-                                "https://ton-domaine.com"     // PROD -> à remplacer
+                                "http://api.hysinternational.com",    // ← api prod
+                                "http://hysinternational.com",        // ← domain
+                                "http://www.hysinternational.com"     // ← web domain
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
 

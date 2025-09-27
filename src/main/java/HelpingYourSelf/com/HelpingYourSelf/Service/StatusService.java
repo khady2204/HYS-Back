@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,21 +24,24 @@ public class StatusService {
 
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
-    private final CloudinaryService cloudinaryService;
+    private final S3Service s3Service;
 
 @Transactional
 public StatusDTO createStatus(Long userId, String text, MultipartFile[] files) throws IOException {
     User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID: " + userId));
 
-    // Le reste du code reste inchangé
     Status status = Status.builder()
             .user(user)
             .text(text)
             .build();
 
     if (files != null && files.length > 0) {
-        List<String> mediaUrls = cloudinaryService.uploadFiles(files);
+        List<String> mediaUrls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String mediaUrl = s3Service.uploadStatusMedia(file); // ← Utilise S3 maintenant
+            mediaUrls.add(mediaUrl);
+        }
         status.setMediaUrls(mediaUrls);
     }
 

@@ -20,7 +20,7 @@ COPY --from=build /app/target/*.jar app.jar
 RUN mkdir -p /app/uploads
 
 # Exposition du port de l'application
-EXPOSE 8081
+EXPOSE 8080
 
 # Commande de démarrage
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]

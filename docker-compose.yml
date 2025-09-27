@@ -1,20 +1,22 @@
-version: '3.8'
-
 services:
   # Service pour l'application Spring Boot
   app:
     build: .
     container_name: helping-yourself-app
+    network_mode: "host"
     ports:
-      - "8081:8081"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://helpingyourself.c5gs4246owpo.af-south-1.rds.amazonaws.com:3306/helpingyourself?useSSL=true&serverTimezone=UTC&createDatabaseIfNotExist=true
-      - SPRING_DATASOURCE_USERNAME=admin
-      - SPRING_DATASOURCE_PASSWORD=Mkha2025!Rds#
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - CLOUDINARY_CLOUD_NAME=du7libmu5
-      - CLOUDINARY_API_KEY=835729119528394
-      - CLOUDINARY_API_SECRET=LkGcpDACPOONBo9sEb6fScZj5ag
+      - "8080:8080"
+    env_file :
+      - .env
+
+
     volumes:
       - ./uploads:/app/uploads
     restart: unless-stopped
+
+    # Santé de l'app
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3

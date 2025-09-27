@@ -11,11 +11,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.*;
+
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class PublicationService {
@@ -29,12 +27,23 @@ public class PublicationService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private S3Service s3Service;
+
     public PublicationDTO poster(User auteur, String texte, MultipartFile media) {
         Publication pub = new Publication();
         pub.setAuteur(auteur);
         pub.setTexte(texte);
-        pub.setMediaUrl(media != null ? saveMedia(media) : null);
-        pub.setMediaType(media != null ? media.getContentType().split("/")[0] : null);
+        // Remplacement de l'ancienne méthode par S3
+        if (media != null && !media.isEmpty()) {
+            String mediaUrl = s3Service.uploadFile(media, "publications");
+            pub.setMediaUrl(mediaUrl);
+            pub.setMediaType(media.getContentType().split("/")[0]);
+        } else {
+            pub.setMediaUrl(null);
+            pub.setMediaType(null);
+        }
+
         publicationRepo.save(pub);
         return mapToDTO(pub);
 
@@ -101,18 +110,6 @@ public class PublicationService {
         return "Publication supprimée.";
     }
 
-    private String saveMedia(MultipartFile media) {
-        try {
-            String uploadDir = "uploads/";
-            String filename = UUID.randomUUID() + "_" + media.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, filename);
-            Files.createDirectories(filePath.getParent());
-            Files.copy(media.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            return "/uploads/" + filename;
-        } catch (IOException e) {
-            throw new RuntimeException("Échec de l'enregistrement du fichier", e);
-        }
-    }
 
     public String updateTexte(Long id, String nouveauTexte, User user) {
         Publication pub = publicationRepo.findById(id)
