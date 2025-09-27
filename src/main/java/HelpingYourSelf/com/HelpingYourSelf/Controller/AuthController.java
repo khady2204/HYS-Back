@@ -81,8 +81,12 @@ public class AuthController {
     @PostMapping("/google-login")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
         String idToken = payload.get("idToken");
-        String token = auth.processGoogleToken(idToken);
-        return ResponseEntity.ok(Collections.singletonMap("token", token));
+        try {
+            String token = auth.processGoogleToken(idToken);
+            return ResponseEntity.ok(Collections.singletonMap("token", token));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+        }
     }
 
 
