@@ -35,7 +35,7 @@ public class SecurityConfig {
         http
             .cors(cors -> {})
             .csrf(csrf -> csrf.ignoringRequestMatchers("/ws/**").disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .exceptionHandling(exceptions -> exceptions
@@ -72,12 +72,12 @@ public class SecurityConfig {
 
                 .anyRequest().authenticated()
             )
-                //.oauth2Login(oauth -> oauth
-                //.userInfoEndpoint(userInfo -> userInfo
-        //.userService(customOAuth2UserService)
-                //)
-                //.defaultSuccessUrl("/auth-success", true)
-                    // )
+            .oauth2Login(oauth -> oauth
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
+                .defaultSuccessUrl("/auth-success", true)
+            )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
