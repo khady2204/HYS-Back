@@ -1,5 +1,7 @@
 package HelpingYourSelf.com.HelpingYourSelf.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 public class OAuth2ClientConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(OAuth2ClientConfig.class);
+
     private final OAuth2ClientProperties properties;
 
     public OAuth2ClientConfig(OAuth2ClientProperties properties) {
@@ -34,7 +38,7 @@ public class OAuth2ClientConfig {
                 .collect(Collectors.toList());
 
         if (registrations.isEmpty()) {
-            throw new IllegalStateException("No OAuth2 client registrations configured");
+            log.warn("No OAuth2 client registrations configured - OAuth2 client features will be disabled");
         }
 
         return new InMemoryClientRegistrationRepository(registrations);
