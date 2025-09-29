@@ -39,6 +39,7 @@ public class OAuth2ClientConfig {
 
         if (registrations.isEmpty()) {
             log.warn("No OAuth2 client registrations configured - OAuth2 client features will be disabled");
+            return registrationId -> null;
         }
 
         return new InMemoryClientRegistrationRepository(registrations);
