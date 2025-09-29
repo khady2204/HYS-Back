@@ -42,7 +42,7 @@ public class AuthService {
         if (userRepo.findByEmail(req.getEmail()).isPresent()) {
             throw new RuntimeException("Cet email est déjà utilisé.");
         }
-
+        //CRÉER l'utilisateur mais NE PAS LE SAUVEGARDER
         User u = new User();
         u.setNom(req.getNom());
         u.setPrenom(req.getPrenom());
@@ -57,8 +57,9 @@ public class AuthService {
 
         String code = String.valueOf(new Random().nextInt(899999) + 100000);
         u.setOtp(code);
-        u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
+        u.setOtpExpiration(Instant.now().plus(10, ChronoUnit.MINUTES));
 
+        //SAUVEGARDER MAINTENANT (mais compte désactivé)
         userRepo.save(u);
         emailService.sendOtpEmail(req.getEmail(), code, "l'activation de votre compte");
 
@@ -92,17 +93,27 @@ public class AuthService {
         User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
+        // AJOUT DES LOGS DE DEBUG
+        System.out.println("=== DEBUG OTP ===");
+        System.out.println("Heure actuelle: " + Instant.now());
+        System.out.println("OTP expiration: " + user.getOtpExpiration());
+        System.out.println("OTP valide: " + user.getOtpExpiration().isAfter(Instant.now()));
+
         if (user.getOtp() == null || !user.getOtp().equals(req.getOtp()))
             throw new RuntimeException("OTP incorrect");
 
-        if (user.getOtpExpiration().isBefore(Instant.now()))
+        if (user.getOtpExpiration().isBefore(Instant.now())) {
+            System.out.println("❌ OTP EXPIRÉ - Différence: " +
+                    Duration.between(Instant.now(), user.getOtpExpiration()).getSeconds() + "s");
             throw new RuntimeException("OTP expiré");
+        }
 
+        // ACTIVER le compte seulement après vérification OTP
         user.setOtp(null);
         user.setOtpExpiration(null);
         user.setLastLoginIp(ip);
         user.setDeviceInfo(req.getDeviceInfo());
-        user.setEnabled(true);
+        user.setEnabled(true); // COMPTE ACTIVÉ ICI
 
         userRepo.save(user);
         return jwt.generateToken(user);
