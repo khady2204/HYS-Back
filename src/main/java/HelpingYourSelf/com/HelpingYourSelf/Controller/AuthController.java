@@ -36,7 +36,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         auth.register(request);
-        return ResponseEntity.ok("Inscription réussie");
+        // ✅ Retourner du JSON
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Inscription réussie");
+        response.put("status", "success");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
