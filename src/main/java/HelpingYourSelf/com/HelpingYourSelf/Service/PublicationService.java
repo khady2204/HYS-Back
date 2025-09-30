@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,7 @@ public class PublicationService {
         Publication publication = Publication.builder()
                 .auteur(auteur)
                 .texte(texte)
+                .createdAt(Instant.now())
                 .build();
 
         publication = publicationRepo.save(publication);
