@@ -72,4 +72,9 @@ public class PublicationController {
             @AuthenticationPrincipal(expression = "user") User user) {
         return ResponseEntity.ok(publicationService.updateTexte(id, nouveauTexte, user));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PublicationDTO> getPublicationDetails(@PathVariable Long id) {
+        return ResponseEntity.ok(publicationService.getPublicationDetails(id));
+    }
 }

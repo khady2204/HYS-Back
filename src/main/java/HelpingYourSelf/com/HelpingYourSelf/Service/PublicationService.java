@@ -8,6 +8,7 @@ import HelpingYourSelf.com.HelpingYourSelf.Repository.CommentaireRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.MediaRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.PublicationRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -219,5 +220,13 @@ public class PublicationService {
                     return response;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PublicationDTO getPublicationDetails(Long id) {
+        Publication publication = publicationRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Publication non trouvée avec l'ID: " + id));
+
+        return mapToDTO(publication);
     }
 }
