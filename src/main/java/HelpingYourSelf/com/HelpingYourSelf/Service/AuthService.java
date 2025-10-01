@@ -42,7 +42,7 @@ public class AuthService {
         if (userRepo.findByEmail(req.getEmail()).isPresent()) {
             throw new RuntimeException("Cet email est déjà utilisé.");
         }
-        //CRÉER l'utilisateur mais NE PAS LE SAUVEGARDER
+
         User u = new User();
         u.setNom(req.getNom());
         u.setPrenom(req.getPrenom());
@@ -57,9 +57,8 @@ public class AuthService {
 
         String code = String.valueOf(new Random().nextInt(899999) + 100000);
         u.setOtp(code);
-        u.setOtpExpiration(Instant.now().plus(10, ChronoUnit.MINUTES));
+        u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
 
-        //SAUVEGARDER MAINTENANT (mais compte désactivé)
         userRepo.save(u);
         emailService.sendOtpEmail(req.getEmail(), code, "l'activation de votre compte");
 
@@ -93,27 +92,17 @@ public class AuthService {
         User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        // AJOUT DES LOGS DE DEBUG
-        System.out.println("=== DEBUG OTP ===");
-        System.out.println("Heure actuelle: " + Instant.now());
-        System.out.println("OTP expiration: " + user.getOtpExpiration());
-        System.out.println("OTP valide: " + user.getOtpExpiration().isAfter(Instant.now()));
-
         if (user.getOtp() == null || !user.getOtp().equals(req.getOtp()))
             throw new RuntimeException("OTP incorrect");
 
-        if (user.getOtpExpiration().isBefore(Instant.now())) {
-            System.out.println("❌ OTP EXPIRÉ - Différence: " +
-                    Duration.between(Instant.now(), user.getOtpExpiration()).getSeconds() + "s");
+        if (user.getOtpExpiration().isBefore(Instant.now()))
             throw new RuntimeException("OTP expiré");
-        }
 
-        // ACTIVER le compte seulement après vérification OTP
         user.setOtp(null);
         user.setOtpExpiration(null);
         user.setLastLoginIp(ip);
         user.setDeviceInfo(req.getDeviceInfo());
-        user.setEnabled(true); // COMPTE ACTIVÉ ICI
+        user.setEnabled(true);
 
         userRepo.save(user);
         return jwt.generateToken(user);
@@ -256,7 +245,7 @@ public class AuthService {
                     GoogleNetHttpTransport.newTrustedTransport(),
                     new GsonFactory() // Utilisez GsonFactory au lieu de JacksonFactory
             )
-                    .setAudience(Collections.singletonList("7228290626-hth6tki9gki75ve4hbaf7bbg03am7noa.apps.googleusercontent.com"))
+                    .setAudience(Collections.singletonList("440755805165-0lsmqghacaffjq393md8g6bpngn1d3a6.apps.googleusercontent.com"))
                     .build();
         } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException("Erreur lors de l'initialisation de la vérification Google", e);
