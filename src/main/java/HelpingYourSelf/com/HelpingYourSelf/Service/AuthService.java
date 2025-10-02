@@ -1,8 +1,10 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.*;
+import HelpingYourSelf.com.HelpingYourSelf.Entity.OtpRegistration;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
+import HelpingYourSelf.com.HelpingYourSelf.Repository.OtpRegistrationRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import HelpingYourSelf.com.HelpingYourSelf.Security.JwtTokenProvider;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -29,8 +31,11 @@ public class AuthService {
     private final EmailService emailService;
     private final PasswordEncoder encoder;
     private final JwtTokenProvider jwt;
+    private final OtpRegistrationRepository otpRegistrationRepository;
 
+    // ✅ Méthode modifié
     public void register(RegisterRequest req) {
+        // ✅ Étape 1: Validation seulement
         if (!req.getPassword().equals(req.getConfirmPassword())) {
             throw new RuntimeException("Les mots de passe ne correspondent pas.");
         }
@@ -43,26 +48,31 @@ public class AuthService {
             throw new RuntimeException("Cet email est déjà utilisé.");
         }
 
-        User u = new User();
-        u.setNom(req.getNom());
-        u.setPrenom(req.getPrenom());
-        u.setAdresse(req.getAdresse());
-        u.setPhone(req.getPhone());
-        u.setEmail(req.getEmail());
-        u.setSexe(req.getSexe());
-        u.setDatenaissance(req.getDatenaissance());
-        u.setPassword(encoder.encode(req.getPassword()));
-        u.setEnabled(false); // Activer uniquement après vérification OTP
-        u.setRoles(Set.of(Role.USER));
+        // Nettoyer les anciennes inscriptions en cours
+        otpRegistrationRepository.findByEmail(req.getEmail())
+                .ifPresent(existing -> otpRegistrationRepository.delete(existing));
 
-        String code = String.valueOf(new Random().nextInt(899999) + 100000);
-        u.setOtp(code);
-        u.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
+        // ✅ STOCKAGE TEMPORAIRE (pas de création User)
+        String otpCode = String.valueOf(new Random().nextInt(899999) + 100000);
 
-        userRepo.save(u);
-        emailService.sendOtpEmail(req.getEmail(), code, "l'activation de votre compte");
+        OtpRegistration otpRegistration = OtpRegistration.builder()
+                .email(req.getEmail())
+                .phone(req.getPhone())
+                .nom(req.getNom())
+                .prenom(req.getPrenom())
+                .adresse(req.getAdresse())
+                .sexe(req.getSexe())
+                .datenaissance(req.getDatenaissance())
+                .password(encoder.encode(req.getPassword()))
+                .otpCode(otpCode)
+                .otpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES))
+                .build();
 
-        System.out.println("[REGISTER] OTP envoyé à l'email " + req.getEmail() + " : " + code);
+        otpRegistrationRepository.save(otpRegistration);
+
+        // Envoi OTP
+        emailService.sendOtpEmail(req.getEmail(), otpCode, "l'activation de votre compte");
+        System.out.println("[REGISTER] OTP envoyé (stockage temporaire) à " + req.getEmail() + " : " + otpCode);
     }
 
     public String sendOtp(OtpLoginRequest req) {
