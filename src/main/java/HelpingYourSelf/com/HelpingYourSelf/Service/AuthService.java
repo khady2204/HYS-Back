@@ -98,26 +98,39 @@ public class AuthService {
     }
 
     public String verifyOtp(OtpVerifyRequest req, String ip) {
-        // CHANGEMENT : Recherche par EMAIL au lieu de téléphone
-        User user = userRepo.findByEmail(req.getEmail()) // ← Modifié ici
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        // ✅ CORRECTION : Chercher dans otp_registration au lieu de user
+        OtpRegistration otpRegistration = otpRegistrationRepository
+                .findByEmailAndOtpCode(req.getEmail(), req.getOtp())
+                .orElseThrow(() -> new RuntimeException("OTP invalide ou expiré"));
 
-        if (user.getOtp() == null || !user.getOtp().equals(req.getOtp()))
-            throw new RuntimeException("OTP incorrect");
-
-        if (user.getOtpExpiration().isBefore(Instant.now()))
+        if (otpRegistration.getOtpExpiration().isBefore(Instant.now())) {
+            otpRegistrationRepository.delete(otpRegistration);
             throw new RuntimeException("OTP expiré");
+        }
 
-        user.setOtp(null);
-        user.setOtpExpiration(null);
-        user.setLastLoginIp(ip);
-        user.setDeviceInfo(req.getDeviceInfo());
-        user.setEnabled(true);
+        // ✅ CRÉATION de l'User APRÈS OTP vérifié
+        User user = User.builder()
+                .nom(otpRegistration.getNom())
+                .prenom(otpRegistration.getPrenom())
+                .adresse(otpRegistration.getAdresse())
+                .phone(otpRegistration.getPhone())
+                .email(otpRegistration.getEmail())
+                .sexe(otpRegistration.getSexe())
+                .datenaissance(otpRegistration.getDatenaissance())
+                .password(otpRegistration.getPassword()) // Déjà encodé
+                .enabled(true) // ✅ Activé immédiatement
+                .roles(Set.of(Role.USER))
+                .build();
 
         userRepo.save(user);
+
+        // ✅ Nettoyer l'OTP temporaire
+        otpRegistrationRepository.delete(otpRegistration);
+
+        System.out.println("[REGISTER] Utilisateur créé après OTP vérifié: " + req.getEmail());
+
         return jwt.generateToken(user);
     }
-
     public String sendResetOtp(ResetRequest req) {
         User user = userRepo.findByEmail(req.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email introuvable"));
