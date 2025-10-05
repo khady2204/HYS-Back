@@ -104,14 +104,16 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "user_followers",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "follower_id")
+        name = "abonnements",
+        joinColumns = @JoinColumn(name = "suiveur_id"),
+        inverseJoinColumns = @JoinColumn(name = "suivi_id")
     )
-    private Set<User> followers = new HashSet<>();
-
-    @ManyToMany(mappedBy = "followers")
+    @JsonIgnore
     private Set<User> abonnements = new HashSet<>();
+
+    @ManyToMany(mappedBy = "abonnements")
+    @JsonIgnore
+    private Set<User> abonnes = new HashSet<>();
 
 
 

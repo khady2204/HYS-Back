@@ -16,11 +16,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.List;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +43,6 @@ public class PublicationService {
 
         publication = publicationRepo.save(publication);
 
-
         // Gestion des médias
         if (fichiers != null && !fichiers.isEmpty()) {
             try {
@@ -59,7 +57,7 @@ public class PublicationService {
                     mediaRepo.save(media);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Erreur lors du téléchargement des fichiers vers AWS", e);
+                throw new RuntimeException("Erreur lors du téléchargement des fichiers vers Cloudinary", e);
             }
         }
 
@@ -77,10 +75,10 @@ public class PublicationService {
         // Get the publication
         Publication publication = publicationRepo.findById(publicationId)
                 .orElseThrow(() -> new RuntimeException("Publication non trouvée"));
-
+                
         // Check if user is the author
         boolean isAuthor = publication.getAuteur().getId().equals(user.getId());
-
+        
         // Toggle like
         int currentLikes = publication.getNombreLikes();
         boolean isLiked = currentLikes > 0; // Simple check for this example
@@ -89,7 +87,6 @@ public class PublicationService {
             publication.setNombreLikes(currentLikes - 1);
         } else {
             publication.setNombreLikes(currentLikes + 1);
-
             // Send notification if not the author
             if (!isAuthor) {
                 notificationService.envoyerNotification(
@@ -102,7 +99,6 @@ public class PublicationService {
                 );
             }
         }
-
         publicationRepo.save(publication);
         return isLiked ? "Like retiré" : "Publication aimée";
     }

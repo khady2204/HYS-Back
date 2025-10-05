@@ -5,5 +5,7 @@ public enum NotificationType {
     SUGGESTION,
     LIKE,
     COMMENTAIRE,
-    MISE_A_JOUR_PUBLICATION
+    MISE_A_JOUR_PUBLICATION,
+    LIKE_COMMENTAIRE,
+    PARTAGE
 }

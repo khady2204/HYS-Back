@@ -8,30 +8,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/commentaires")
+@RequestMapping("/publications")
 public class CommentaireController {
 
     @Autowired
     private CommentaireService commentaireService;
 
-    @PostMapping("/{publicationId}/ajouter")
+    @PostMapping("/{publicationId}/commenter")
     public ResponseEntity<?> commenter(@AuthenticationPrincipal(expression = "user") User user,
-                                       @PathVariable Long publicationId,
-                                       @RequestParam String contenu,
-                                       @RequestParam(required = false) Long parentId) {
+                                     @PathVariable Long publicationId,
+                                     @RequestBody Map<String, String> requestBody) {
+        String contenu = requestBody.get("contenu");
+        Long parentId = requestBody.get("parentId") != null ?
+                Long.parseLong(requestBody.get("parentId")) : null;
+
         return ResponseEntity.ok(commentaireService.commenter(user, publicationId, contenu, parentId));
     }
 
 
-    @PostMapping("/{id}/like")
-    public ResponseEntity<?> like(@AuthenticationPrincipal(expression = "user") User user, @PathVariable Long id) {
-        return ResponseEntity.ok(commentaireService.toggleLike(user, id));
+    @PostMapping("/commentaires/{commentId}/like")
+    public ResponseEntity<?> likeComment(@AuthenticationPrincipal(expression = "user") User user, 
+                                      @PathVariable("commentId") Long commentId) {
+        return ResponseEntity.ok(commentaireService.toggleLike(user, commentId));
     }
 
-    @DeleteMapping("/{id}/supprimer")
-    public ResponseEntity<?> deleteCom(@PathVariable Long id, @AuthenticationPrincipal(expression = "user") User user) {
-        return ResponseEntity.ok(commentaireService.supprimerCommentaire(id, user));
+    @DeleteMapping("/commentaires/{commentId}")
+    public ResponseEntity<?> deleteCom(@PathVariable("commentId") Long commentId, 
+                                    @AuthenticationPrincipal(expression = "user") User user) {
+        return ResponseEntity.ok(commentaireService.supprimerCommentaire(commentId, user));
     }
 
 }
