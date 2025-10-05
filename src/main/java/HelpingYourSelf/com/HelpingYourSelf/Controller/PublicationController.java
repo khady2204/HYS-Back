@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/publications")
+@RequestMapping("api/publications")
 @RequiredArgsConstructor
 public class PublicationController {
     private final PublicationService publicationService;
