@@ -1,11 +1,12 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,12 @@ public class S3Service {
     private String bucketName;
 
     private final S3Client s3Client;
+    private final String awsRegion;
 
-    public S3Service() {
+    public S3Service(@Value("${aws.s3.region:af-south-1}") String region) {
+        this.awsRegion = region;
         this.s3Client = S3Client.builder()
-                .region(software.amazon.awssdk.regions.Region.AF_SOUTH_1)
+                .region(Region.of(region))
                 .build();
     }
 
@@ -73,7 +76,7 @@ public class S3Service {
     }
 
     private String generatePublicUrl(String fileName) {
-        return String.format("https://%s.s3.af-south-1.amazonaws.com/%s", bucketName, fileName);
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, awsRegion, fileName);
     }
 
     // MÉTHODES SPÉCIALISÉES EXISTANTES
