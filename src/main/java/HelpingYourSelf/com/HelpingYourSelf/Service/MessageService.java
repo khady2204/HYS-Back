@@ -1,3 +1,4 @@
+
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
@@ -11,10 +12,6 @@ import HelpingYourSelf.com.HelpingYourSelf.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +25,7 @@ public class MessageService {
 
     private final MessageRepository messageRepo;
     private final NotificationService notificationService;
+    private final S3Service s3Service;
 
 
     public MessageResponse sendMessage(User sender, MessageRequest request) {
@@ -54,27 +52,14 @@ public class MessageService {
         }
 
         if (hasMedia) {
-            try {
-                String uploadDir = System.getProperty("user.dir") + "/uploads";
-                Files.createDirectories(Paths.get(uploadDir));
+            String mediaUrl = s3Service.uploadMessageMedia(request.getMediaFile());
+            message.setMediaUrl(mediaUrl);
 
-                String original = Objects.requireNonNull(request.getMediaFile().getOriginalFilename());
-                String extension = "";
-                int dot = original.lastIndexOf('.');
-                if (dot >= 0) {
-                    extension = original.substring(dot);
-                }
-
-                String fileName = UUID.randomUUID() + extension;
-                Path filePath = Paths.get(uploadDir, fileName);
-                request.getMediaFile().transferTo(filePath.toFile());
-
-                String mediaUrl = "/media/" + fileName;
-                message.setMediaUrl(mediaUrl);
-                message.setMediaType(request.getMediaType());
-            } catch (IOException e) {
-                throw new RuntimeException("Could not store media file", e);
+            String mediaType = request.getMediaType();
+            if (mediaType == null || mediaType.isBlank()) {
+                mediaType = Optional.ofNullable(request.getMediaFile().getContentType()).orElse(null);
             }
+            message.setMediaType(mediaType);
         }
 
         Message savedMessage = messageRepository.save(message);
