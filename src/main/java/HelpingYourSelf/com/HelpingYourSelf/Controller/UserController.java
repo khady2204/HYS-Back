@@ -2,6 +2,7 @@ package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.PublicUserDTO;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UpdateProfileResponse;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.UserAddressResponse;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UserSummary;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Interet;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
@@ -108,6 +109,21 @@ public class UserController {
         );
 
         return ResponseEntity.ok(dto);
+    }
+
+
+    @GetMapping("/{id}/address")
+    public ResponseEntity<?> getUserAddress(@PathVariable Long id) {
+        return userRepo.findById(id)
+                .map(user -> ResponseEntity.ok(
+                        new UserAddressResponse(
+                                user.getId(),
+                                user.getPrenom(),
+                                user.getNom(),
+                                user.getAdresse()
+                        )
+                ))
+                .orElseGet(() -> ResponseEntity.status(404).body("Utilisateur introuvable"));
     }
 
 
