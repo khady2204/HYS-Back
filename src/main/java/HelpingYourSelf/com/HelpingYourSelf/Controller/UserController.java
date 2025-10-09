@@ -2,6 +2,7 @@ package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.PublicUserDTO;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UpdateProfileResponse;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.UserAddressResponse;
 import HelpingYourSelf.com.HelpingYourSelf.DTO.UserSummary;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Interet;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Role;
@@ -111,6 +112,21 @@ public class UserController {
     }
 
 
+    @GetMapping("/{id}/address")
+    public ResponseEntity<?> getUserAddress(@PathVariable Long id) {
+        return userRepo.findById(id)
+                .map(user -> ResponseEntity.ok(
+                        new UserAddressResponse(
+                                user.getId(),
+                                user.getPrenom(),
+                                user.getNom(),
+                                user.getAdresse()
+                        )
+                ))
+                .orElseGet(() -> ResponseEntity.status(404).body("Utilisateur introuvable"));
+    }
+
+
 
     //  Lister les utilisateurs connectés (isOnline = true)
     @GetMapping("/online")
@@ -178,7 +194,7 @@ public class UserController {
     @PostMapping("/{id}/follow")
     public ResponseEntity<?> follow(@PathVariable Long id, @AuthenticationPrincipal(expression = "user") User user) {
         User toFollow = userRepo.findById(id).orElseThrow();
-        toFollow.getFollowers().add(user);
+        toFollow.getAbonnes().add(user);
         userRepo.save(toFollow);
         return ResponseEntity.ok("Abonnement réussi.");
     }
@@ -191,7 +207,7 @@ public class UserController {
         User toUnfollow = userRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
 
-        toUnfollow.getFollowers().remove(user);
+        toUnfollow.getAbonnes().remove(user);
         userRepo.save(toUnfollow);
 
         return ResponseEntity.ok("Désabonnement réussi.");
@@ -199,7 +215,7 @@ public class UserController {
 
     @GetMapping("/followers")
     public ResponseEntity<Set<User>> getMesFollowers(@AuthenticationPrincipal(expression = "user") User user) {
-        return ResponseEntity.ok(user.getFollowers());
+        return ResponseEntity.ok(user.getAbonnes());
     }
 
     @GetMapping("/abonnements")
