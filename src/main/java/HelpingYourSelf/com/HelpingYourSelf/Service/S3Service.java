@@ -116,7 +116,36 @@ public class S3Service {
     }
 
     public String uploadMessageMedia(MultipartFile file) {
-        return uploadFileWithOriginalName(file, "messages");
+        return uploadWithPrefix(file, "messages/");
+    }
+
+    public String uploadWithPrefix(MultipartFile file, String prefix) {
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("Fichier vide");
+        }
+
+        try {
+            String original = file.getOriginalFilename();
+            String clean = StringUtils.cleanPath(original == null ? file.getName() : original);
+            if (clean == null || clean.isBlank()) {
+                clean = UUID.randomUUID().toString();
+            }
+
+            String effectivePrefix = prefix == null ? "" : prefix;
+            String key = effectivePrefix + UUID.randomUUID() + "_" + clean;
+
+            PutObjectRequest putReq = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(file.getContentType())
+                    .build();
+
+            s3Client.putObject(putReq, RequestBody.fromBytes(file.getBytes()));
+
+            return generatePublicUrl(key);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur upload S3: " + e.getMessage(), e);
+        }
     }
 
     // NOUVELLES MÉTHODES SPÉCIALISÉES POUR MULTIPLES FICHIERS
