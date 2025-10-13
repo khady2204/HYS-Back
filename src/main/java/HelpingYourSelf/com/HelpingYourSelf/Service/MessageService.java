@@ -1,4 +1,3 @@
-
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.MessageRequest;
@@ -22,8 +21,6 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-
-    private final MessageRepository messageRepo;
     private final NotificationService notificationService;
     private final S3Service s3Service;
 
@@ -57,7 +54,12 @@ public class MessageService {
 
             String mediaType = request.getMediaType();
             if (mediaType == null || mediaType.isBlank()) {
-                mediaType = Optional.ofNullable(request.getMediaFile().getContentType()).orElse(null);
+                String contentType = request.getMediaFile().getContentType();
+                if (contentType != null && contentType.contains("/")) {
+                    mediaType = contentType.substring(0, contentType.indexOf('/'));
+                } else {
+                    mediaType = contentType;
+                }
             }
             message.setMediaType(mediaType);
         }
