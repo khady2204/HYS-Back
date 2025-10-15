@@ -147,18 +147,44 @@ public class AuthService {
     }
 
     public void confirmReset(ResetConfirmRequest req) {
-        User user = userRepo.findByPhone(req.getPhone())
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        try {
+            System.out.println("🔧 confirmReset called for: " + req.getEmail());
 
-        if (!Boolean.TRUE.equals(user.getIsOtpVerified())) {
-            throw new RuntimeException("OTP non vérifié");
+            // ✅ CORRECTION 1: Chercher par EMAIL
+            User user = userRepo.findByEmail(req.getEmail())
+                    .orElseThrow(() -> {
+                        System.out.println("❌ User not found for email: " + req.getEmail());
+                        return new RuntimeException("Utilisateur introuvable");
+                    });
+
+            System.out.println("✅ User found: " + user.getId());
+
+            // ✅ CORRECTION 2: Vérifier que l'OTP a été validé
+            // Soit via isOtpVerified, soit en vérifiant que l'OTP est null (utilisé)
+            if (user.getOtp() != null) {
+                System.out.println("❌ OTP not validated yet: " + user.getOtp());
+                throw new RuntimeException("OTP non validé. Veuillez d'abord vérifier le code.");
+            }
+
+            // ✅ CORRECTION 3: Vérifier les mots de passe
+            if (!req.getNewPassword().equals(req.getConfirmPassword())) {
+                System.out.println("❌ Passwords don't match");
+                throw new RuntimeException("Les mots de passe ne correspondent pas");
+            }
+
+            // ✅ Mettre à jour le mot de passe
+            user.setPassword(encoder.encode(req.getNewPassword()));
+            user.setOtp(null);
+            user.setOtpExpiration(null);
+            user.setIsOtpVerified(false); // Remettre à false
+            userRepo.save(user);
+
+            System.out.println("✅ Password reset successful for user: " + user.getId());
+
+        } catch (Exception e) {
+            System.out.println("❌ Error in confirmReset: " + e.getMessage());
+            throw e;
         }
-
-        user.setPassword(encoder.encode(req.getNewPassword()));
-        user.setOtp(null);
-        user.setOtpExpiration(null);
-        user.setIsOtpVerified(false);
-        userRepo.save(user);
     }
 
     public Optional<User> loginWithEmail(String email, String password) {
