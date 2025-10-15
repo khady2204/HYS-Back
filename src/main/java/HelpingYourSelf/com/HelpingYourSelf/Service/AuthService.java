@@ -253,10 +253,14 @@ public class AuthService {
             throw new RuntimeException("OTP expiré");
         }
 
+        user.setOtp(null);
+        user.setOtpExpiration(null);
         user.setIsOtpVerified(true);
         user.setOtpAttempts(0);
         user.setOtpLockUntil(null);
         userRepo.save(user);
+
+        System.out.println("✅ OTP reset validated and cleared for: " + req.getEmail());
     }
 
     public void createSuperAdmin(RegisterRequest req) {
