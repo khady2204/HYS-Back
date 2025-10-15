@@ -46,7 +46,13 @@ public class PublicationService {
         // Gestion des médias
         if (fichiers != null && !fichiers.isEmpty()) {
             try {
-                List<String> urls = s3Service.uploadFiles(fichiers.toArray(new MultipartFile[0]));
+                // ✅ CORRECTION : Boucle manuelle
+                List<String> urls = new ArrayList<>();
+                for (MultipartFile fichier : fichiers) {
+                    String url = s3Service.uploadPublicationMedia(fichier);
+                    urls.add(url);
+                }
+
                 for (int i = 0; i < urls.size(); i++) {
                     Media media = Media.builder()
                             .url(urls.get(i))
@@ -57,7 +63,7 @@ public class PublicationService {
                     mediaRepo.save(media);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Erreur lors du téléchargement des fichiers vers Cloudinary", e);
+                throw new RuntimeException("Erreur lors du téléchargement des fichiers vers S3", e);
             }
         }
 

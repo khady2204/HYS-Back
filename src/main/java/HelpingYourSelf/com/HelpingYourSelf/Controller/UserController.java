@@ -25,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -114,16 +115,20 @@ public class UserController {
 
     @GetMapping("/{id}/address")
     public ResponseEntity<?> getUserAddress(@PathVariable Long id) {
-        return userRepo.findById(id)
-                .map(user -> ResponseEntity.ok(
-                        new UserAddressResponse(
-                                user.getId(),
-                                user.getPrenom(),
-                                user.getNom(),
-                                user.getAdresse()
-                        )
-                ))
-                .orElseGet(() -> ResponseEntity.status(404).body("Utilisateur introuvable"));
+        Optional<User> userOpt = userRepo.findById(id);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            UserAddressResponse response = new UserAddressResponse(
+                    user.getId(),
+                    user.getPrenom(),
+                    user.getNom(),
+                    user.getAdresse()
+            );
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(404).body("Utilisateur introuvable");
+        }
     }
 
 
