@@ -58,6 +58,24 @@ public class MessageController {
         return ResponseEntity.ok(messages);
     }
 
+    // Marquer les messages comme lus
+    @PutMapping("/{messageId}/read")
+    public ResponseEntity<?> markMessageAsRead(
+            @AuthenticationPrincipal CustomUserDetails currentUserDetails,
+            @PathVariable Long messageId) {
+
+        if (currentUserDetails == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        try {
+            messageService.markMessageAsRead(messageId, currentUserDetails.getUser());
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/discussions")
     public ResponseEntity<?> getMyGroupedMessages(@AuthenticationPrincipal(expression = "user") User currentUser) {
         if (currentUser == null) {

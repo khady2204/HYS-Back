@@ -1,9 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.config;
 
-
-
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -22,7 +19,6 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-
                         .allowedOrigins(
                                 "http://localhost:4200",      // Angular dev
                                 "http://localhost:8100",      // Ionic dev
@@ -33,14 +29,14 @@ public class WebConfig {
                                 "ionic://localhost",          // Ionic mobile
                                 "http://api.hysinternational.com",    // ← api prod
                                 "http://hysinternational.com",        // ← domain
-                                "http://www.hysinternational.com"     // ← web domain
+                                "http://www.hysinternational.com",    // ← web domain
+                                "http://localhost"                    // ← celui qui manquait
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-
-                        .allowedOriginPatterns(allowedOrigins)
-
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .exposedHeaders("Authorization", "Content-Type", "Content-Disposition") // ← AJOUTE CECI
+                        .allowCredentials(true)
+                        .maxAge(3600); // ← pour cache preflight
             }
 
             @Override
