@@ -112,6 +112,13 @@ public class NotificationService {
         return mapToDTO(envoyerNotification(notification));
     }
 
+    /**
+     * Construit un {@link NotificationDTO} à partir de l'entité persistée. Les champs
+     * `cibleUrl` et `photoProfile` étaient précédemment inversés lors du mappage, ce qui
+     * empêchait le frontend de récupérer correctement le lien de redirection et la photo
+     * de l'émetteur. Ce mappage explicite garantit que chaque champ est alimenté avec la
+     * valeur attendue.
+     */
     public NotificationDTO mapToDTO(Notification notification) {
         User emetteur = notification.getEmetteur();
         return new NotificationDTO(
@@ -121,8 +128,8 @@ public class NotificationService {
                 notification.getDateEnvoi(),
                 notification.getType(),
                 emetteur != null ? emetteur.getPrenom() + " " + emetteur.getNom() : "Système",
-                emetteur != null ? emetteur.getProfileImage() : null,
-                notification.getCibleUrl()
+                notification.getCibleUrl(),
+                emetteur != null ? emetteur.getProfileImage() : null
         );
     }
 }
