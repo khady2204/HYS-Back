@@ -263,6 +263,50 @@ public class AuthService {
         System.out.println("✅ OTP reset validated and cleared for: " + req.getEmail());
     }
 
+    public void resendRegistrationOtp(String email) {
+        OtpRegistration otpRegistration = otpRegistrationRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Aucune inscription en cours pour cet email"));
+
+        // Vérifier délai minimum (1 minute)
+        if (otpRegistration.getLastOtpSent() != null) {
+            Duration timeSinceLastOtp = Duration.between(otpRegistration.getLastOtpSent(), Instant.now());
+            if (timeSinceLastOtp.getSeconds() < 60) {
+                throw new RuntimeException("Veuillez patienter avant de demander un nouveau code");
+            }
+        }
+
+        String newOtp = String.valueOf(new Random().nextInt(899999) + 100000);
+        otpRegistration.setOtpCode(newOtp);
+        otpRegistration.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
+        otpRegistration.setLastOtpSent(Instant.now());
+
+        otpRegistrationRepository.save(otpRegistration);
+        emailService.sendOtpEmail(email, newOtp, "l'activation de votre compte");
+    }
+
+    public void resendResetOtp(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        // Vérifier délai minimum
+        if (user.getLastOtpSent() != null) {
+            Duration timeSinceLastOtp = Duration.between(user.getLastOtpSent(), Instant.now());
+            if (timeSinceLastOtp.getSeconds() < 60) {
+                throw new RuntimeException("Veuillez patienter avant de demander un nouveau code");
+            }
+        }
+
+        String newOtp = String.valueOf(new Random().nextInt(899999) + 100000);
+        user.setOtp(newOtp);
+        user.setOtpExpiration(Instant.now().plus(5, ChronoUnit.MINUTES));
+        user.setLastOtpSent(Instant.now());
+        user.setIsOtpVerified(false);
+        user.setOtpAttempts(0);
+
+        userRepo.save(user);
+        emailService.sendOtpEmail(email, newOtp, "la réinitialisation de votre mot de passe");
+    }
+
     public void createSuperAdmin(RegisterRequest req) {
         if (!req.getPassword().equals(req.getConfirmPassword())) {
             throw new RuntimeException("Les mots de passe ne correspondent pas.");

@@ -48,6 +48,8 @@ public class OtpRegistration {
 
     private Instant createdAt = Instant.now();
 
+    private Instant lastOtpSent; // Pour éviter le spam
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();

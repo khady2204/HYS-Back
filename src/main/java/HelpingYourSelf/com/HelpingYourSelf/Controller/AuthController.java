@@ -128,6 +128,27 @@ public class AuthController {
         }
     }
 
+    // Renvoyer OTP pour l'inscription
+    @PostMapping("/resend-registration-otp")
+    public ResponseEntity<?> resendRegistrationOtp(@RequestBody ResendOtpRequest request) {
+        try {
+            auth.resendRegistrationOtp(request.getEmail());
+            return ResponseEntity.ok(Collections.singletonMap("message", "Nouveau code OTP envoyé avec succès"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
+    // Renvoyer OTP pour la réinitialisation
+    @PostMapping("/resend-reset-otp")
+    public ResponseEntity<?> resendResetOtp(@RequestBody ResendOtpRequest request) {
+        try {
+            auth.resendResetOtp(request.getEmail());
+            return ResponseEntity.ok(Collections.singletonMap("message", "Nouveau code OTP envoyé avec succès"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal(expression = "user") User user) {

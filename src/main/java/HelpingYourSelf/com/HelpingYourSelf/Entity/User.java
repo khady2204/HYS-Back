@@ -125,6 +125,8 @@ public class User {
     @JsonIgnore
     private User createdBy;
 
+    private Instant lastOtpSent;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();
