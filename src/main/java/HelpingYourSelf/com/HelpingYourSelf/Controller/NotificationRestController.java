@@ -1,6 +1,6 @@
 package HelpingYourSelf.com.HelpingYourSelf.Controller;
 
-import HelpingYourSelf.com.HelpingYourSelf.DTO.NotificationDTO;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.NotificationFeedDTO;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
 import HelpingYourSelf.com.HelpingYourSelf.Security.CustomUserDetails;
 import HelpingYourSelf.com.HelpingYourSelf.Service.NotificationService;
@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -22,13 +20,13 @@ public class NotificationRestController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<?> getUserNotifications(@AuthenticationPrincipal CustomUserDetails currentUserDetails) {
+    public ResponseEntity<NotificationFeedDTO> getUserNotifications(@AuthenticationPrincipal CustomUserDetails currentUserDetails) {
         if (currentUserDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non authentifié");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         User currentUser = currentUserDetails.getUser();
-        List<NotificationDTO> notifications = notificationService.getNotifications(currentUser);
-        return ResponseEntity.ok(notifications);
+        NotificationFeedDTO notificationFeed = notificationService.getNotificationFeed(currentUser);
+        return ResponseEntity.ok(notificationFeed);
     }
 }
