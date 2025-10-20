@@ -1,6 +1,8 @@
 package HelpingYourSelf.com.HelpingYourSelf.Service;
 
 import HelpingYourSelf.com.HelpingYourSelf.DTO.NotificationDTO;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.NotificationFeedDTO;
+import HelpingYourSelf.com.HelpingYourSelf.DTO.StatusDTO;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.Notification;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.NotificationType;
 import HelpingYourSelf.com.HelpingYourSelf.Entity.User;
@@ -21,6 +23,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepo;
     private final SimpMessagingTemplate messagingTemplate;
+    private final StatusService statusService;
 
     @Transactional
     public void notifierAbonnes(User emetteur, Set<User> destinataires, String message, NotificationType type) {
@@ -56,6 +59,22 @@ public class NotificationService {
                 .stream()
                 .map(this::mapToDTO)
                 .toList();
+    }
+
+    public NotificationFeedDTO getNotificationFeed(User user) {
+        List<StatusDTO> statusFeed = statusService.getStatusesForUser(user.getId());
+
+        List<NotificationDTO> likeNotifications = notificationRepo.findByDestinataireOrderByDateEnvoiDesc(user)
+                .stream()
+                .filter(notification -> notification.getType() == NotificationType.LIKE
+                        || notification.getType() == NotificationType.LIKE_COMMENTAIRE)
+                .map(this::mapToDTO)
+                .toList();
+
+        return NotificationFeedDTO.builder()
+                .statuses(statusFeed)
+                .likes(likeNotifications)
+                .build();
     }
 
     /**
